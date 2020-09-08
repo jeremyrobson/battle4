@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <canvas id="canvas" width="640" height="480">
+    </canvas>
+
+    <pre id="textarea"></pre>
+
+    <script src="script.js"></script>
+    <script>
+
+        var last = 0;
+
+        function clamp(value, min, max) {
+            if (value < min) return min;
+            if (value >= max) return max;
+            return value;
+        }
+
+        function rand(min, max) {
+            return Math.floor(Math.random() * (max - min) + min);
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function getDistance(a, b) {
+            var dx = b.x - a.x;
+            var dy = b.y - a.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function random_name() {
+            var alphabet = "aabcdeefghiijklmoopqrstuuvwxyyz";
+            var name = "";
+            var length = rand(3,10);
+            for (var i=0; i<length; i++) {
+                var r = rand(0, alphabet.length);
+                name += alphabet.substr(r, 1);
+            }
+            return name;
+        }
+
+        function checkBattle() {
+            if (friendlies === 0) {
+                console.log("You lose!");
+                return false;
+            }
+            if (enemies === 0) {
+                console.log("You win!");
+                return false;
+            }
+            return true;
+        }
+
+        function update(timestamp) {
+
+            if (Math.floor(timestamp / 100) > last) { //one tick per second
+
+                if (checkBattle()) {
+                    q.update(map);
+                }
+
+                last = Math.floor(timestamp / 100);
+            }
+
+            sprites.forEach(function(sprite) {
+                sprite.update();
+            });
+
+            draw();
+            window.requestAnimationFrame(update);
+        }
+
+        function draw() {
+            context.fillStyle = "skyblue";
+            context.fillRect(0,0,640,480);
+
+            map.draw(context, q.next);
+
+            sprites.forEach(function(sprite) {
+                if (!sprite.dead) {
+                    sprite.draw(context);
+                }
+            });
+
+            context.font = "12px monospace";
+            context.fillStyle = "rgb(255,255,0)";
+            context.fillText(`Friendlies: ${friendlies}`, 0, 0);
+            context.fillText(`Enemies: ${enemies}`, 0, 12);
+        }
+
+        var canvas, context;
+        var textarea = document.getElementById("textarea");
+        var sprites = [];
+        var q, map;
+
+        var units = [];
+        var parties = [];
+        var friendlies = 5;
+        var enemies = 5;
+
+        var player = new Party("player", "rgb(0,255,255)");
+        var cpu = new Party("cpu", "rgb(255,0,255)");
+
+        var activeUnit = null;
+
+        window.onload = function() {
+            canvas = document.getElementById("canvas");
+            context = canvas.getContext("2d");
+            context.textBaseline = "top";
+
+            q = new Queue();
+            map = new BattleMap(16, 16);
+
+            for (var i = 0; i < friendlies; i++) {
+                var player_unit = new Unit(player);
+                player.add(player_unit, player);
+                q.add(player_unit);
+                units.push(player_unit);
+                map.addUnit(player_unit);
+            }
+
+            for (var j = 0; j < enemies; j++) {
+                var cpu_unit = new Unit(cpu);
+                cpu.add(cpu_unit, cpu);
+                q.add(cpu_unit);
+                units.push(cpu_unit);
+                map.addUnit(cpu_unit);
+            }
+
+            update();
+        };
+
+    </script>
+
+</body>
+
+
+</html>
