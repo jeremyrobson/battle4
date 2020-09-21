@@ -12,9 +12,14 @@
     <pre id="textarea"></pre>
 
     <script src="script.js"></script>
+    <script src="phonemes.js"></script>
     <script>
 
         var last = 0;
+
+        Array.prototype.pick_random = function() {
+            return this[rand(0, this.length)];
+        };
 
         function clamp(value, min, max) {
             if (value < min) return min;
@@ -40,12 +45,10 @@
         }
 
         function random_name() {
-            var alphabet = "aabcdeefghiijklmoopqrstuuvwxyyz";
             var name = "";
-            var length = rand(3,10);
+            var length = rand(2,5);
             for (var i=0; i<length; i++) {
-                var r = rand(0, alphabet.length);
-                name += alphabet.substr(r, 1);
+                name += phonemes.pick_random()
             }
             return name;
         }
@@ -60,6 +63,14 @@
                 return false;
             }
             return true;
+        }
+
+        function create_unit(party, job) {
+            var unit = new Unit(party, job);
+            party.add(unit, player);
+            q.add(unit);
+            units.push(unit);
+            map.addUnit(unit);
         }
 
         function update(timestamp) {
@@ -106,8 +117,8 @@
 
         var units = [];
         var parties = [];
-        var friendlies = 5;
-        var enemies = 5;
+        var friendlies = 0;
+        var enemies = 0;
 
         var player = new Party("player", "rgb(0,255,255)");
         var cpu = new Party("cpu", "rgb(255,0,255)");
@@ -122,21 +133,20 @@
             q = new Queue();
             map = new BattleMap(16, 16);
 
-            for (var i = 0; i < friendlies; i++) {
-                var player_unit = new Unit(player);
-                player.add(player_unit, player);
-                q.add(player_unit);
-                units.push(player_unit);
-                map.addUnit(player_unit);
-            }
+            create_unit(player, "fighter");
+            create_unit(player, "fighter");
+            create_unit(player, "fighter");
+            create_unit(player, "archer");
+            create_unit(player, "archer");
 
-            for (var j = 0; j < enemies; j++) {
-                var cpu_unit = new Unit(cpu);
-                cpu.add(cpu_unit, cpu);
-                q.add(cpu_unit);
-                units.push(cpu_unit);
-                map.addUnit(cpu_unit);
-            }
+            create_unit(cpu, "fighter");
+            create_unit(cpu, "fighter");
+            create_unit(cpu, "archer");
+            create_unit(cpu, "archer");
+            create_unit(cpu, "archer");
+
+            friendlies = player.units.length
+            enemies = cpu.units.length;
 
             update();
         };

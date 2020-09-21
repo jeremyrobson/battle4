@@ -1,8 +1,29 @@
 const TILE_WIDTH = 40;
 const TILE_HEIGHT = 30;
 
-const MOVE_COST = 30;
-const ACTION_COST = 50;
+const RANGE_WEIGHT = 2; //how valuable range is over damage
+
+let action_templates = {
+    "melee": {
+        "range": 1.5,  //sqrt(2) is minimum required distance for melee attack
+        "action_cost": 50
+    },
+    "arrow": {
+        "range": 5,
+        "action_cost": 50
+    }
+};
+
+let job_templates = {
+    "fighter": {
+        "move_cost": 20,
+        "actions": ["melee"]
+    },
+    "archer": {
+        "move_cost": 40,
+        "actions": ["arrow"]
+    }
+};
 
 class BattleMap {
     constructor(width, height) {
@@ -63,9 +84,9 @@ class BattleMap {
         this.map[b.x][b.y].unit = b;
     }
 
-    getFriends(unit, alive) {
+    getFriends(unit, alive, healthy) {
         return map.units.filter(function(u) {
-            return unit.team === u.team && unit.id !== u.id && (!alive || !u.dead);
+            return unit.team === u.team && unit.id !== u.id && (!alive || !u.dead) && (!healthy || !u.critical());
         }).sort(function(a, b) {
             var da = getDistance(unit, a);
             var db = getDistance(unit, b);
@@ -83,6 +104,7 @@ class BattleMap {
         });
     }
 
+    //the safest possible area, todo: heatmap
     getSafety(unit) {
         if (unit.team === "player") {
             return {x: this.width-1, y: this.height-1};
@@ -127,12 +149,15 @@ class Party {
 }
 
 class Unit {
-    constructor(party) {
+    constructor(party, job_type) {
+        var job_template = job_templates[job_type];
+
         this.id = Math.random();
         this.name = random_name();
         this.sprite = this.name.substr(0, 1);
         this.team = party.name;
         this.color = party.color;
+        this.job_type = job_type;
         this.hp = 100;
         this.mp = 100;
         this.ct = 0;
@@ -142,9 +167,19 @@ class Unit {
         this.dead = false;
         this.acted = false;
         this.done = false;
+        this.actions = job_template.actions;
+        this.move_cost = job_template.move_cost;
 
         this.x = 0;
         this.y = 0;
+    }
+
+    getText() {
+        return this.name + " (" + this.hp + ")";
+    }
+
+    critical() {
+        return this.hp < 25;
     }
 
     ready() {
@@ -162,14 +197,35 @@ class Unit {
 
     selectAction(map) {
         var enemies = map.getEnemies(this);
-        var friends = map.getFriends(this, false);
-        var target = enemies.shift();
-        var distance = getDistance(this, target);
+        //var friends = map.getFriends(this, false);
 
+        var scores = [];
 
-        //todo: find attack that will require minimum movement
+        //for each action look at each enemy
+        //for each enemy, calculate damage, and look at action range
+        //the best action is the one with the highest damage + longest range + shortest distance
+        //todo: factor in move_cost, action_cost, target status (critical)
+        this.actions.forEach((action_type) => {
+            var action_template = action_templates[action_type];
+            enemies.forEach((enemy) => {
+                var distance = getDistance(this, enemy);
+                var action = new BattleAction(action_type, this, enemy);
+                var value = action_template.range*RANGE_WEIGHT + action.calculateDamage() - distance;
+                scores.push({
+                    action_type: action_type,
+                    target: enemy,
+                    value: value
+                });
+            });
+        });
 
-        return new BattleAction("melee", this, target);
+        scores.sort(function(a, b) {
+            return a.value - b.value;
+        });
+
+        var best_score = scores.pop();
+
+        return new BattleAction(best_score.action_type, this, best_score.target);
     }
 
     invokeAction(action) {
@@ -185,7 +241,7 @@ class Unit {
             distance = getDistance(this, target);
             if (distance > 1) {
                 if (this.moveToward(map, target)) {
-                    this.ct -= MOVE_COST;
+                    this.ct -= this.move_cost;
                 }
                 else {
                     console.error("unable to move");
@@ -197,21 +253,23 @@ class Unit {
         }
         else {
             var action = this.selectAction(map);
+
             target = action.target;
             distance = getDistance(this, target);
 
             if (distance <= action.range) {
                 this.invokeAction(action);
-                this.ct -= ACTION_COST;
+                this.ct -= action.action_cost;
                 this.acted = true;
             } else {
-                console.log("living friends", map.getFriends(this, true).length);
-                if (this.hp < 25 && map.getFriends(this, true).length > 1) {
+                //console.log("living friends", map.getFriends(this, true).length);
+                //run away if critical but still have friends left
+                if (this.critical() && map.getFriends(this, true, true).length > 1) {
                     target = map.getSafety(this);
                 }
 
                 if (this.moveToward(map, target)) {
-                    this.ct -= MOVE_COST;
+                    this.ct -= this.move_cost;
                 } else {
                     console.error("unable to move");
                 }
@@ -221,7 +279,9 @@ class Unit {
 
         if (this.ct <= 0) {
             if (!this.acted) {
-                console.error("failed to invoke action", this.ct);
+                //if movement drained the ct, the unit cannot act
+                //therefore the selected action must take ct into account?
+                console.error(this.name + " failed to invoke action", this.ct);
             }
             this.ct = 0;
             this.done = true;
@@ -276,25 +336,34 @@ class Unit {
 }
 
 class BattleAction {
-    constructor(type, actor, target) {
-        this.type = type;
+    constructor(action_type, actor, target) {
+        var action = action_templates[action_type];
+
+        this.action_type = action_type;
+        this.action_cost = action.action_cost;
         this.actor = actor;
         this.target = target;
         this.ct = 0;
-        this.range = 1.5; //sqrt(2) is minimum required distance for melee attack
+        this.range = action.range;
         this.pow = 10;
         this.agl = rand(2, 10);
     }
 
     calculateDamage() {
-        return rand(1, 7) + rand(1, 7) + rand(1, 7);
+        switch (this.action_type) {
+            case "melee":
+                return rand(1, 7) + rand(1, 7) + rand(1, 7);
+            case "arrow":
+                return rand(1, 7);
+        }
     }
 
     invoke() {
-        console.log("invoked " + this.type);
+        console.log("invoked " + this.action_type);
         var damage = this.calculateDamage();
         this.target.applyDamage(damage);
         sprites.push(new Damage(damage, this.target));
+        sprites.push(new Line(this.actor, this.target));
     }
 }
 
@@ -307,7 +376,7 @@ class Queue {
     log() {
         var text = "";
         this.list.forEach((item) => {
-            text = text + item.name + "&nbsp;" + "&nbsp;" + item.ct + "<br>";
+            text = text + item.getText() + "&nbsp;" + "&nbsp;" + item.ct + "<br>";
         });
         textarea.innerHTML = text;
     }
@@ -362,9 +431,7 @@ class Queue {
 }
 
 class Sprite {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
+    constructor() {
         this.life = 100;
         this.dead = false;
     }
@@ -382,7 +449,9 @@ class Sprite {
 
 class Damage extends Sprite {
     constructor(text, target) {
-        super(target.x, target.y);
+        super();
+        this.x = target.x;
+        this.y = target.y;
         this.text = text;
     }
 
@@ -393,5 +462,23 @@ class Damage extends Sprite {
         ctx.font = "24px monospace";
         ctx.fillStyle = "rgb(255,0,0)";
         ctx.fillText(this.text, dx, dy);
+    }
+}
+
+class Line extends Sprite {
+    constructor(u1, u2) {
+        super();
+        this.u1 = u1;
+        this.u2 = u2;
+    }
+
+    draw(ctx) {
+        ctx.lineWidth = 2;
+        context.lineCap = "round";
+        ctx.strokeStyle = this.u1.color;
+        ctx.beginPath();
+        ctx.moveTo(this.u1.x * TILE_WIDTH, this.u1.y * TILE_HEIGHT);
+        ctx.lineTo(this.u2.x * TILE_WIDTH, this.u2.y * TILE_HEIGHT);
+        ctx.stroke();
     }
 }
