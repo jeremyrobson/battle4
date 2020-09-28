@@ -57,6 +57,13 @@ class BattleMap {
         this.map[b.x][b.y].unit = b;
     }
 
+    getUnitsInRadius(point, radius) {
+        return this.units.filter((unit) => {
+            var distance = getDistance(point, unit);
+            return !unit.dead && distance <= radius;
+        });
+    }
+
     getFriends(unit, alive, healthy) {
         return this.units.filter(function(u) {
             return unit.team === u.team && unit.id !== u.id && (!alive || !u.dead) && (!healthy || !u.critical());

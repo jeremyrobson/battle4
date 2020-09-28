@@ -33,3 +33,10 @@ function random_name() {
     }
     return name;
 }
+
+function random_color(min, max) {
+    var r = rand(min, max);
+    var g = rand(min, max);
+    var b = rand(min, max);
+    return `rgb(${r},${g},${b})`;
+}

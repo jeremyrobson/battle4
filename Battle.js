@@ -1,7 +1,7 @@
 class Battle {
 
-    constructor(width, height, player, output) {
-        this.q = new BattleQueue(output);
+    constructor(width, height, parties) {
+        this.q = new BattleQueue();
         this.map = new BattleMap(width, height);
         this.text = "";
 
@@ -9,13 +9,9 @@ class Battle {
         this.friendlies = 0;
         this.enemies = 0;
 
-        this.player = player;
-        this.cpu = new Party("cpu", "rgb(255,0,255)");
-        this.cpu.add(new BattleUnit(this.cpu, "fighter"));
-        this.cpu.add(new BattleUnit(this.cpu, "fighter"));
-        this.cpu.add(new BattleUnit(this.cpu, "archer"));
-        this.cpu.add(new BattleUnit(this.cpu, "archer"));
-        this.cpu.add(new BattleUnit(this.cpu, "archer"));
+        console.log(parties);
+        this.player = parties[0];
+        this.cpu = parties[1];
 
         this.player.units.forEach((unit) => {
             this.q.add(unit);

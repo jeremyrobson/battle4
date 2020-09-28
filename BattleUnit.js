@@ -4,7 +4,7 @@ class BattleUnit {
 
         this.id = Math.random();
         this.name = random_name();
-        this.sprite = this.name.substr(0, 1);
+        this.sprite = job_template.sprite;
         this.team = party.name;
         this.color = party.color;
         this.job_type = job_type;
@@ -60,8 +60,8 @@ class BattleUnit {
             var action_template = action_templates[action_type];
             enemies.forEach((enemy) => {
                 var distance = getDistance(this, enemy);
-                var action = new BattleAction(action_type, this, enemy, map);
-                var value = action_template.range*RANGE_WEIGHT + action.calculateDamage() - distance;
+                var action = new BattleAction(action_type, this, enemy);
+                var value = action_template.range*RANGE_WEIGHT + action.calculateTotalDamage(map) - distance;
                 scores.push({
                     action_type: action_type,
                     target: enemy,
@@ -77,25 +77,6 @@ class BattleUnit {
         var best_score = scores.pop();
 
         return new BattleAction(best_score.action_type, this, best_score.target);
-    }
-
-    invokeAction(action) {
-        var results = action.invoke();
-
-        results.forEach((result) => {
-            switch (result.type) {
-                case "hit":
-                    addSprite(new BattleDamage(result.damage, result.target));
-                    addSprite(new BattleLine(this, result.target));
-                    break;
-                case "kill":
-                    addSprite(new BattleDamage(result.damage, result.target));
-                    addSprite(new BattleLine(this, result.target));
-                    break;
-                case "miss":
-                    break;
-            }
-        });
     }
 
     turn(map) {
@@ -124,7 +105,24 @@ class BattleUnit {
             distance = getDistance(this, target);
 
             if (distance <= action.range) {
-                this.invokeAction(action);
+
+                var results = action.invoke(map);
+
+                results.forEach((result) => {
+                    switch (result.type) {
+                        case "hit":
+                            addSprite(new BattleDamage(result.damage, result.target));
+                            addSprite(new BattleLine(this, result.target));
+                            break;
+                        case "kill":
+                            addSprite(new BattleDamage(result.damage, result.target));
+                            addSprite(new BattleLine(this, result.target));
+                            break;
+                        case "miss":
+                            break;
+                    }
+                });
+
                 this.ct -= action.action_cost;
                 this.acted = true;
             } else {
@@ -188,10 +186,23 @@ class BattleUnit {
             ctx.shadowBlur = 0;
         }
 
+        var dx = this.x * TILE_WIDTH + TILE_WIDTH / 3;
+        var dy = this.y * TILE_HEIGHT + TILE_HEIGHT / 2;
+        ctx.font = "16px Arial";
+        ctx.fillStyle = this.color;
+        ctx.fillText(this.sprite, dx, dy);
+
+        this.drawHealth(ctx);
+
+        ctx.shadowBlur = 0;
+    }
+
+    drawHealth(ctx) {
         var dx = this.x * TILE_WIDTH;
         var dy = this.y * TILE_HEIGHT;
-        ctx.font = "12px Arial";
-        ctx.fillStyle = this.color;
-        ctx.fillText(this.name, dx, dy);
+        ctx.fillStyle = this.dead ? "rgb(0,0,0)" : "rgb(255,0,0)";
+        ctx.fillRect(dx, dy, TILE_WIDTH, 4);
+        ctx.fillStyle = "rgb(0,255,0)";
+        ctx.fillRect(dx, dy, TILE_WIDTH * this.hp / 100, 4);
     }
 }

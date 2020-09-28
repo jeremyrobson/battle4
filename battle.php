@@ -1,4 +1,12 @@
 <script>
+
+    let teams = {};
+
+    <?php
+        $form = json_encode($_POST["form"]);
+        echo "teams = $form;";
+    ?>
+
     const TILE_WIDTH = 40;
     const TILE_HEIGHT = 30;
     const RANGE_WEIGHT = 2; //how valuable range is over damage
@@ -6,22 +14,36 @@
     let action_templates = {
         "melee": {
             "range": 1.5,  //sqrt(2) is minimum required distance for melee attack
-            "action_cost": 50
+            "action_cost": 50,
+            "spread": 0
         },
         "arrow": {
             "range": 5,
-            "action_cost": 50
+            "action_cost": 50,
+            "spread": 0
+        },
+        "fire": {
+            "range": 3,
+            "action_cost": 50,
+            "spread": 1.5
         }
     };
 
     let job_templates = {
         "fighter": {
+            "sprite": "F",
             "move_cost": 20,
             "actions": ["melee"]
         },
         "archer": {
+            "sprite": "A",
             "move_cost": 40,
             "actions": ["arrow"]
+        },
+        "wizard": {
+            "sprite": "W",
+            "move_cost": 40,
+            "actions": ["fire"]
         }
     };
 </script>
@@ -84,13 +106,19 @@
 </script>
 
 <script>
-    let player = new Party("player", "rgb(0,255,255)");
-    player.add(new BattleUnit(player, "fighter"));
-    player.add(new BattleUnit(player, "fighter"));
-    player.add(new BattleUnit(player, "fighter"));
-    player.add(new BattleUnit(player, "archer"));
-    player.add(new BattleUnit(player, "archer"));
+    let parties = [];
 
-    game_state = new Battle(16, 16, player);
+    for (const team of Object.keys(teams)) {
+        let party = new Party(team, random_color(0,100));
+        for (const job of Object.keys(teams[team])) {
+            let count = parseInt(teams[team][job]);
+            for (let i=0; i<count; i++) {
+                party.add(new BattleUnit(party, job));
+            }
+        }
+        parties.push(party);
+    }
+
+    game_state = new Battle(16, 16, parties);
     update();
 </script>
