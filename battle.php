@@ -60,6 +60,7 @@
         "BattleSprite.js",
         "BattleQueue.js",
         "BattleLine.js",
+        "BattleText.js",
         "BattleDamage.js"
     ];
 
@@ -83,11 +84,18 @@
     }
 
     function update(timestamp) {
-        game_state.update(timestamp);
+        if (game_state.status !== "done") {
+            game_state.update(timestamp);
+        }
+
         textarea.innerHTML = game_state.text;
 
         sprites.forEach(function (sprite) {
             sprite.update();
+        });
+
+        sprites = sprites.filter(function(sprite) {
+            return !sprite.dead;
         });
 
         draw();
@@ -98,10 +106,12 @@
         game_state.draw(context);
 
         sprites.forEach(function (sprite) {
-            if (!sprite.dead) {
-                sprite.draw(context);
-            }
+            sprite.draw(context);
         });
+    }
+
+    function done() {
+        console.log("redirect");
     }
 </script>
 
@@ -119,6 +129,6 @@
         parties.push(party);
     }
 
-    game_state = new Battle(16, 16, parties);
+    game_state = new Battle(16, 16, parties, done);
     update();
 </script>

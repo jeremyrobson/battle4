@@ -1,8 +1,9 @@
 class Battle {
 
-    constructor(width, height, parties) {
+    constructor(width, height, parties, fn) {
         this.q = new BattleQueue();
         this.map = new BattleMap(width, height);
+        this.ondone = fn instanceof Function ? fn : function() { };
         this.text = "";
 
         this.units = [];
@@ -30,6 +31,7 @@ class Battle {
 
         this.friendlies = this.player.units.length;
         this.enemies = this.cpu.units.length;
+        this.status = "";
     }
 
     checkBattle() {
@@ -42,11 +44,11 @@ class Battle {
         }).length;
 
         if (this.friendlies === 0) {
-            console.log("You lose!");
+            this.done("You Lose!", "rgb(255,0,0)");
             return false;
         }
         if (this.enemies === 0) {
-            console.log("You win!");
+            this.done("You Win!", "rgb(255,255,0)");
             return false;
         }
         return true;
@@ -74,4 +76,10 @@ class Battle {
         ctx.fillText(`Enemies: ${this.enemies}`, 0, 12);
     }
 
+    done(text, color) {
+        addSprite(new BattleText(text, 100, 100, 50, color, 200, () => {
+            this.ondone();
+        }));
+        this.status = "done";
+    }
 }
