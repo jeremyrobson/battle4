@@ -10,7 +10,6 @@ class Battle {
         this.friendlies = 0;
         this.enemies = 0;
 
-        console.log(parties);
         this.player = parties[0];
         this.cpu = parties[1];
 

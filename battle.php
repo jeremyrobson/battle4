@@ -1,12 +1,4 @@
 <script>
-
-    let teams = {};
-
-    <?php
-        $form = json_encode($_POST["form"]);
-        echo "teams = $form;";
-    ?>
-
     const TILE_WIDTH = 40;
     const TILE_HEIGHT = 30;
     const RANGE_WEIGHT = 2; //how valuable range is over damage
@@ -50,7 +42,6 @@
 
 <?php
     $battle_scripts = [
-            "phonemes.js",
         "functions.js",
         "Party.js",
         "Battle.js",
@@ -110,25 +101,52 @@
         });
     }
 
+    //todo: get team instead of just units which includes name, color, etc.
+    function start(units) {
+        let parties = [];
+
+        let player = new Party("player", random_color(50, 200, 0, 100, 50, 200));
+        units.forEach(function(unit_data) {
+            player.add(new BattleUnit(player, unit_data));
+        });
+        parties.push(player);
+
+        let cpu = new Party("cpu", random_color(50, 200, 0, 100, 50, 200));
+        for (var i=0; i<5; i++) {
+            cpu.add(new BattleUnit(cpu, {
+                team: "cpu",
+                job_class: "fighter",
+                name: "Enemy " + i,
+                hp: 100,
+                agl: 7
+            }));
+        }
+        parties.push(cpu);
+
+        game_state = new Battle(16, 16, parties, done);
+        update();
+    }
+
     function done() {
         console.log("redirect");
     }
 </script>
 
 <script>
-    let parties = [];
+    var request = new XMLHttpRequest();
+    request.open('GET', 'get_units.php', true);
 
-    for (const team of Object.keys(teams)) {
-        let party = new Party(team, random_color(0,100));
-        for (const job of Object.keys(teams[team])) {
-            let count = parseInt(teams[team][job]);
-            for (let i=0; i<count; i++) {
-                party.add(new BattleUnit(party, job));
-            }
+    request.onload = function() {
+        if (this.status >= 200 && this.status < 400) {
+            start(JSON.parse(this.response));
+        } else {
+            // We reached our target server, but it returned an error
         }
-        parties.push(party);
-    }
+    };
 
-    game_state = new Battle(16, 16, parties, done);
-    update();
+    request.onerror = function() {
+        // There was a connection error of some sort
+    };
+
+    request.send();
 </script>

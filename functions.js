@@ -25,18 +25,9 @@ function getDistance(a, b) {
     return Math.sqrt(dx * dx + dy * dy);
 }
 
-function random_name() {
-    var name = "";
-    var length = rand(2,5);
-    for (var i=0; i<length; i++) {
-        name += phonemes.pick_random()
-    }
-    return name;
-}
-
-function random_color(min, max) {
-    var r = rand(min, max);
-    var g = rand(min, max);
-    var b = rand(min, max);
+function random_color(r0, r1, g0, g1, b0, b1) {
+    var r = rand(r0, r1);
+    var g = rand(g0, g1);
+    var b = rand(b0, b1);
     return `rgb(${r},${g},${b})`;
 }

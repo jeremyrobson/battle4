@@ -1,22 +1,22 @@
 class BattleUnit {
-    constructor(party, job_type) {
-        var job_template = job_templates[job_type];
+    constructor(party, unit_data) {
+        var job_template = job_templates[unit_data.job_class];
 
-        this.id = Math.random();
-        this.name = random_name();
+        this.id = unit_data.id;
+        this.name = unit_data.name;
         this.sprite = job_template.sprite;
         this.team = party.name;
         this.color = party.color;
-        this.job_type = job_type;
-        this.hp = 100;
+        this.job_type = unit_data.job_class;
+        this.hp = unit_data.hp;
         this.mp = 100;
         this.ct = 0;
         this.str = 10;
-        this.agl = rand(2,10);
+        this.agl = unit_data.agl;
         this.mag = 5;
         this.dead = false;
         this.acted = false;
-        this.done = false;
+        this.done = true;
         this.actions = job_template.actions;
         this.move_cost = job_template.move_cost;
 
@@ -175,7 +175,7 @@ class BattleUnit {
     }
 
     draw(ctx, activeUnit) {
-        if (activeUnit && activeUnit.id === this.id) {
+        if (activeUnit && !this.done) {
             ctx.shadowColor = "yellow";
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
@@ -194,6 +194,7 @@ class BattleUnit {
 
         this.drawHealth(ctx);
 
+        ctx.shadowColor = "black";
         ctx.shadowBlur = 0;
     }
 

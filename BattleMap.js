@@ -12,7 +12,8 @@ class BattleMap {
                 var tile = {
                     x: x,
                     y: y,
-                    unit: null
+                    unit: null,
+                    color: random_color(0, 25, 100, 150, 0, 25)
                 };
                 this.map[x][y] = tile;
                 this.tiles.push(tile);
@@ -104,7 +105,7 @@ class BattleMap {
             for (var y=0; y<this.height; y++) {
                 var dy = y * TILE_HEIGHT;
 
-                ctx.fillStyle = "forestgreen";
+                ctx.fillStyle = this.map[x][y].color;
                 ctx.fillRect(dx, dy, TILE_WIDTH, TILE_HEIGHT);
             }
         }

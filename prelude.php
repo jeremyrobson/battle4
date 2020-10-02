@@ -1,24 +1,3 @@
-<?php
-
-    $job_templates = [
-        "fighter" => [
-            "sprite" => "F",
-            "move_cost" => 20,
-            "actions" => ["melee"]
-        ],
-        "archer" => [
-            "sprite" => "A",
-            "move_cost" => 40,
-            "actions" => ["arrow"]
-        ],
-        "wizard" => [
-            "sprite" => "W",
-            "move_cost" => 40,
-            "actions" => ["fire"]
-        ]
-    ];
-?>
-
 <form action="battle.php" method="post">
 
     <table>
