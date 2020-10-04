@@ -2,29 +2,16 @@
 
 session_start();
 
+if (!$_SESSION["username"]) {
+    header("Location: login.php");
+}
+
 require_once("Team.php");
+require_once("Job.php");
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
-$job_templates = [
-    "fighter" => [
-        "sprite" => "F",
-        "move_cost" => 20,
-        "actions" => ["melee"]
-    ],
-    "archer" => [
-        "sprite" => "A",
-        "move_cost" => 40,
-        "actions" => ["arrow"]
-    ],
-    "wizard" => [
-        "sprite" => "W",
-        "move_cost" => 40,
-        "actions" => ["fire"]
-    ]
-];
 
 ?>
 

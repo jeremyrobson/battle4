@@ -3,41 +3,8 @@
     const TILE_HEIGHT = 30;
     const RANGE_WEIGHT = 2; //how valuable range is over damage
 
-    let action_templates = {
-        "melee": {
-            "range": 1.5,  //sqrt(2) is minimum required distance for melee attack
-            "action_cost": 50,
-            "spread": 0
-        },
-        "arrow": {
-            "range": 5,
-            "action_cost": 50,
-            "spread": 0
-        },
-        "fire": {
-            "range": 3,
-            "action_cost": 50,
-            "spread": 1.5
-        }
-    };
-
-    let job_templates = {
-        "fighter": {
-            "sprite": "F",
-            "move_cost": 20,
-            "actions": ["melee"]
-        },
-        "archer": {
-            "sprite": "A",
-            "move_cost": 40,
-            "actions": ["arrow"]
-        },
-        "wizard": {
-            "sprite": "W",
-            "move_cost": 40,
-            "actions": ["fire"]
-        }
-    };
+    let action_templates = {};
+    let job_templates = {};
 </script>
 
 <?php

@@ -1,5 +1,10 @@
 <?php
 
+    $jobs = Job::getJobs();
+
+    echo "<pre>";
+    print_r($jobs); die;
+
     $team = Team::load();
 
     if (empty($team->units)) {
@@ -19,11 +24,19 @@
 <div style="display: grid; grid-template-columns: minmax(150px, 15%) 1fr;">
 
     <div>
-        <h1>
-            Menu
-        </h1>
+        <h2>
+            Unit Menu
+        </h2>
 
-        <a href="index.php?page=battle">Start</a>
+        <ul>
+            <li>
+                <a href="index.php?page=battle">Start</a>
+            </li>
+            <li>
+                <a href="logout.php">Logout</a>
+            </li>
+        </ul>
+
     </div>
 
     <div style="display: flex;">
