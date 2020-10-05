@@ -19,7 +19,7 @@ CREATE TABLE `party` (
 CREATE TABLE `unit` (
   `unit_id` INT NOT NULL AUTO_INCREMENT,
   `party_id` INT NOT NULL,
-  `job_class_id` INT NOT NULL,
+  `job_id` INT NOT NULL,
   `name` VARCHAR(255),
   `hp` SMALLINT,
   `agl` SMALLINT,

@@ -6,7 +6,8 @@ if (!$_SESSION["username"]) {
     header("Location: login.php");
 }
 
-require_once("Team.php");
+require_once("DB.php");
+require_once("Party.php");
 require_once("Job.php");
 
 ini_set('display_errors', 1);
@@ -23,15 +24,38 @@ error_reporting(E_ALL);
 </head>
 <body>
 
-<?php
+<div style="display: grid; grid-template-columns: minmax(150px, 15%) 1fr;">
 
-$page = $_GET["page"] ?? "unit_menu";
+    <div>
+        <h2>
+            User Menu
+        </h2>
 
-require_once("$page.php");
+        <ul>
+            <li>
+                <a href="index.php?page=battle">Start</a>
+            </li>
+            <li>
+                <a href="index.php?page=menu_user">View Parties</a>
+            </li>
+            <li>
+                <a href="logout.php">Logout</a>
+            </li>
+        </ul>
 
-?>
+    </div>
 
+    <div>
 
+        <?php
+
+        $page = $_GET["page"] ?? "menu_user";
+
+        require_once("$page.php");
+
+        ?>
+
+    </div>
 
 </body>
 

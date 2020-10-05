@@ -1,5 +1,6 @@
 class Party {
-    constructor(name, color) {
+    constructor(party_id, name, color) {
+        this.party_id = party_id;
         this.name = name;
         this.color = color;
         this.units = [];

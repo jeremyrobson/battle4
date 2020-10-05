@@ -4,12 +4,14 @@ require_once("DB.php");
 
 class User {
 
+    public $user_id;
     public $username;
     public $password;
 
-    public function __construct($username, $password) {
-        $this->username = $username;
-        $this->password = $password;
+    public function __construct($arr) {
+        $this->user_id = $arr["user_id"];
+        $this->username = $arr["username"];
+        $this->password = $arr["password"];
     }
 
     public static function insertUser($user) {
@@ -26,6 +28,6 @@ class User {
         $db = new DB();
         $users = $db->query("user")->where($column, $value)->execute()->fetchAll();
         $user = reset($users);
-        return new User($user["username"], $user["password"]);
+        return new User($user);
     }
 }

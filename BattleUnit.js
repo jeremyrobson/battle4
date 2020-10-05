@@ -1,16 +1,16 @@
 class BattleUnit {
     constructor(party, unit_data) {
-        var job_template = job_templates[unit_data.job_class];
+        var job_template = job_templates[unit_data.job_id];
 
-        this.id = unit_data.id;
+        this.unit_id = unit_data.unit_id;
         this.name = unit_data.name;
         this.sprite = job_template.sprite;
-        this.team = party.name;
+        this.party_id = unit_data.party_id;
         this.color = party.color;
-        this.job_type = unit_data.job_class;
+        this.job_id = unit_data.job_id;
         this.hp = unit_data.hp;
         this.mp = 100;
-        this.ct = 0;
+        this.ct = 0; //todo: change to sta
         this.str = 10;
         this.agl = unit_data.agl;
         this.mag = 5;

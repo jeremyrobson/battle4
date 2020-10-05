@@ -1,10 +1,14 @@
 <script>
+    const user_id = "<?=$_SESSION['user_id']?>";
+
     const TILE_WIDTH = 40;
     const TILE_HEIGHT = 30;
     const RANGE_WEIGHT = 2; //how valuable range is over damage
 
     let action_templates = {};
     let job_templates = {};
+    let player = null;
+    let cpu = null;
 </script>
 
 <?php
@@ -68,52 +72,61 @@
         });
     }
 
-    //todo: get team instead of just units which includes name, color, etc.
-    function start(units) {
-        let parties = [];
-
-        let player = new Party("player", random_color(50, 200, 0, 100, 50, 200));
-        units.forEach(function(unit_data) {
-            player.add(new BattleUnit(player, unit_data));
-        });
-        parties.push(player);
-
-        let cpu = new Party("cpu", random_color(50, 200, 0, 100, 50, 200));
-        for (var i=0; i<5; i++) {
-            cpu.add(new BattleUnit(cpu, {
-                team: "cpu",
-                job_class: "fighter",
-                name: "Enemy " + i,
-                hp: 100,
-                agl: 7
-            }));
-        }
-        parties.push(cpu);
-
-        game_state = new Battle(16, 16, parties, done);
+    //todo: get party instead of just units which includes name, color, etc.
+    function start() {
+        game_state = new Battle(16, 16, player, cpu, done);
         update();
     }
 
     function done() {
         console.log("redirect");
     }
+
+    window.onload = function() {
+        getData("get_jobs.php")
+            .then(jobs => {
+                job_templates = jobs;
+                return getData("get_party.php");
+            })
+            .then(party => {
+                player = new Party(party.party_id, party.name, random_color(50, 200, 0, 100, 50, 200));
+                return getData(`get_units.php?party_id=${party.party_id}`);
+            })
+            .then(units => {
+                units.forEach(function(unit_data) {
+                    player.add(new BattleUnit(player, unit_data));
+                });
+                return getData("get_enemy.php");
+            })
+            .then(units => {
+                cpu = new Party("cpu", "cpu", random_color(50, 200, 0, 100, 50, 200));
+                units.forEach(function(unit_data) {
+                    cpu.add(new BattleUnit(cpu, unit_data));
+                });
+                start();
+            });
+    };
 </script>
 
 <script>
-    var request = new XMLHttpRequest();
-    request.open('GET', 'get_units.php', true);
+    const getData = (endpoint) => {
+        return new Promise((resolve, reject) => {
+            let request = new XMLHttpRequest();
+            request.open('GET', endpoint, true);
 
-    request.onload = function() {
-        if (this.status >= 200 && this.status < 400) {
-            start(JSON.parse(this.response));
-        } else {
-            // We reached our target server, but it returned an error
-        }
+            request.onload = function() {
+                if (this.status >= 200 && this.status < 400) {
+                    resolve(JSON.parse(this.response));
+                } else {
+                    reject();
+                }
+            };
+
+            request.onerror = function() {
+                // There was a connection error of some sort
+            };
+
+            request.send();
+        });
     };
-
-    request.onerror = function() {
-        // There was a connection error of some sort
-    };
-
-    request.send();
 </script>

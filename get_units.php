@@ -2,8 +2,8 @@
 
 session_start();
 
-require_once("Team.php");
+require_once("Party.php");
 
-$team = Team::load();
+$party = Party::getParty($_SESSION["user_id"], $_GET["party_id"]);
 
-echo json_encode($team->units);
+echo json_encode($party->units);

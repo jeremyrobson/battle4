@@ -15,10 +15,9 @@
         if (empty($user)) {
             echo "Username or password incorrect!";
         } else {
-            print_r($form["password"]);
-            print_r($user->password);
             if (password_verify($form["password"], $user->password)) {
                 $_SESSION["username"] = $user->username;
+                $_SESSION["user_id"] = $user->user_id;
                 header("Location: index.php");
             } else {
                 echo "Password incorrect!";

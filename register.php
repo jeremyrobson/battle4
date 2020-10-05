@@ -7,10 +7,7 @@
         $user = User::getUser("username", $form["username"]);
 
         if (empty($user)) {
-            User::insertUser(new User(
-                $form["username"],
-                $form["password"]
-            ));
+            User::insertUser(new User($form));
         } else {
             echo "That user already exists!";
         }

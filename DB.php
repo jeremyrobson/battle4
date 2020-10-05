@@ -3,6 +3,10 @@
 class DB {
     private static $conn;
     private $sql;
+
+    /**
+     * @var PDOStatement
+     */
     private $stmt;
     private $params;
     private $where;
@@ -28,6 +32,9 @@ class DB {
     }
 
     public function query($table) {
+        $this->where = false;
+        $this->params = [];
+
         $this->sql = "SELECT * FROM {$table}";
         return $this;
     }
@@ -37,9 +44,9 @@ class DB {
         return $this;
     }
 
-    public function where($column, $value) {
+    public function where($column, $value, $logic = "AND") {
         if ($this->where) {
-            $this->sql .= " AND $column = :$column";
+            $this->sql .= " $logic $column = :$column";
         }
         else {
             $this->sql .= " WHERE $column = :$column";
@@ -57,8 +64,12 @@ class DB {
         return $this;
     }
 
+    public function fetch() {
+        return $this->stmt->fetch();
+    }
+
     public function fetchAll() {
-        return $this->stmt->fetchAll();
+        return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function insert($table, $object) {

@@ -32,7 +32,7 @@ class BattleAction {
         var total_damage = 0;
         var targets = this.getTargets(map);
         targets.forEach((target) => {
-            if (this.actor.team === target.team) {
+            if (this.actor.party_id === target.party_id) {
                 total_damage -= this.calculateDamage(target);
             }
             else {

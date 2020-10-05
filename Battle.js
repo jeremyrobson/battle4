@@ -1,17 +1,15 @@
 class Battle {
 
-    constructor(width, height, parties, fn) {
+    constructor(width, height, player, cpu, fn) {
         this.q = new BattleQueue();
         this.map = new BattleMap(width, height);
         this.ondone = fn instanceof Function ? fn : function() { };
         this.text = "";
 
         this.units = [];
-        this.friendlies = 0;
-        this.enemies = 0;
 
-        this.player = parties[0];
-        this.cpu = parties[1];
+        this.player = player;
+        this.cpu = cpu;
 
         this.player.units.forEach((unit) => {
             this.q.add(unit);
@@ -28,25 +26,27 @@ class Battle {
         this.activeUnit = null;
         this.last = 0;
 
-        this.friendlies = this.player.units.length;
-        this.enemies = this.cpu.units.length;
         this.status = "";
+
+        this.unit_count = {};
+        this.unit_count[player.party_id] = player.units.length;
+        this.unit_count[cpu.party_id] = cpu.units.length;
     }
 
     checkBattle() {
-        this.friendlies = this.units.filter(function(unit) {
-            return unit.team === "player" && unit.hp > 0;
+        this.unit_count[player.party_id] = this.units.filter(function(unit) {
+            return unit.party_id === player.party_id && unit.hp > 0;
         }).length;
 
-        this.enemies = this.units.filter(function(unit) {
-            return unit.team === "cpu" && unit.hp > 0;
+        this.unit_count[cpu.party_id] = this.units.filter(function(unit) {
+            return unit.party_id === cpu.party_id && unit.hp > 0;
         }).length;
 
-        if (this.friendlies === 0) {
+        if (this.unit_count[player.party_id] === 0) {
             this.done("You Lose!", "rgb(255,0,0)");
             return false;
         }
-        if (this.enemies === 0) {
+        if (this.unit_count[cpu.party_id] === 0) {
             this.done("You Win!", "rgb(255,255,0)");
             return false;
         }
@@ -71,8 +71,8 @@ class Battle {
 
         ctx.font = "12px monospace";
         ctx.fillStyle = "rgb(255,255,0)";
-        ctx.fillText(`Friendlies: ${this.friendlies}`, 0, 0);
-        ctx.fillText(`Enemies: ${this.enemies}`, 0, 12);
+        ctx.fillText(`Friendlies: ${this.unit_count[player.party_id]}`, 0, 0);
+        ctx.fillText(`Enemies: ${this.unit_count[cpu.party_id]}`, 0, 12);
     }
 
     done(text, color) {

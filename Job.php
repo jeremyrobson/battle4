@@ -20,11 +20,24 @@ class Job {
 
     public static function getJobs() {
         $db = new DB();
-        $jobs = $db->query("job")->execute()->fetchAll();
-        $objects = [];
-        foreach ($jobs as $job) {
-            $objects[$job["job_id"]] = new Job($job);
+        $results = $db
+            ->query("job")
+            ->execute()
+            ->fetchAll();
+        $jobs = [];
+        foreach ($results as $result) {
+            $jobs[$result["job_id"]] = new Job($result);
         }
-        return $objects;
+        return $jobs;
+    }
+
+    public static function getJob($job_id) {
+        $db = new DB();
+        $result = $db
+            ->query("job")
+            ->where("job_id", $job_id)
+            ->execute()
+            ->fetch();
+        return new Job($result);
     }
 }
