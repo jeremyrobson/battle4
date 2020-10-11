@@ -59,9 +59,9 @@ VALUES
 
 INSERT INTO `action` (`action_id`, `name`, `range`, `spread`, `action_cost`)
 VALUES
-(1, 'melee', 1.5, 50, 0),
-(2, 'arrow', 5, 50, 0),
-(3, 'fire', 3, 50, 1.5);
+(1, 'melee', 1.5, 0, 50),
+(2, 'arrow', 5, 0, 50),
+(3, 'fire', 3, 1.5, 50);
 
 INSERT INTO `job_action` (`job_id`, `action_id`)
 VALUES

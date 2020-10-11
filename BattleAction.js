@@ -1,14 +1,12 @@
 class BattleAction {
-    constructor(action_type, actor, target) {
-        var action = action_templates[action_type];
-
-        this.action_type = action_type;
-        this.action_cost = action.action_cost;
+    constructor(action_data, actor, target) {
+        this.action_type = action_data.name;
+        this.action_cost = parseInt(action_data.action_cost);
         this.actor = actor;
         this.target = target; //can be enemy or tile
         this.ct = 0;
-        this.range = action.range;
-        this.spread = action.spread;
+        this.range = parseFloat(action_data.range);
+        this.spread = parseFloat(action_data.spread);
         this.pow = 10;
         this.agl = rand(2, 10);
     }

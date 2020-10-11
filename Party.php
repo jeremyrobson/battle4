@@ -7,7 +7,6 @@ class Party {
     public $party_id;
     public $user_id;
     public $name;
-    public $units; //todo: remove this, get units in other ways
 
     public function __construct($params) {
         $this->party_id = $params["party_id"];
@@ -15,12 +14,6 @@ class Party {
         $this->name = $params["name"];
         $this->units = [];
     }
-
-    /*
-    public function addUnit($unit) {
-        $this->units[] = $unit;
-    }
-    */
 
     public static function getParty($user_id, $party_id) {
         $db = new DB();
@@ -34,16 +27,6 @@ class Party {
             ->fetch();
 
         $party = new Party($result);
-
-        $results = $db
-            ->query("unit")
-            ->where("party_id", $party_id)
-            ->execute()
-            ->fetchAll();
-
-        foreach ($results as $result) {
-            $party->units[] = new Unit($result);
-        }
 
         return $party;
     }

@@ -5,8 +5,6 @@
     const TILE_HEIGHT = 30;
     const RANGE_WEIGHT = 2; //how valuable range is over damage
 
-    let action_templates = {};
-    let job_templates = {};
     let player = null;
     let cpu = null;
 </script>
@@ -74,8 +72,18 @@
 
     //todo: get party instead of just units which includes name, color, etc.
     function start() {
+        console.log("Starting Battle...");
         game_state = new Battle(16, 16, player, cpu, done);
         update();
+    }
+
+    function load(battle_data) {
+        console.log(battle_data);
+
+        player = new Party(battle_data["player"], random_color(50, 200, 0, 100, 50, 200));
+        cpu = new Party(battle_data["enemy"], random_color(50, 200, 0, 100, 50, 200));
+
+        start();
     }
 
     function done() {
@@ -83,35 +91,19 @@
     }
 
     window.onload = function() {
-        getData("get_jobs.php")
-            .then(jobs => {
-                job_templates = jobs;
-                return getData("get_party.php");
-            })
-            .then(party => {
-                player = new Party(party.party_id, party.name, random_color(50, 200, 0, 100, 50, 200));
-                return getData(`get_units.php?party_id=${party.party_id}`);
-            })
-            .then(units => {
-                units.forEach(function(unit_data) {
-                    player.add(new BattleUnit(player, unit_data));
-                });
-                return getData("get_enemy.php");
-            })
-            .then(units => {
-                cpu = new Party("cpu", "cpu", random_color(50, 200, 0, 100, 50, 200));
-                units.forEach(function(unit_data) {
-                    cpu.add(new BattleUnit(cpu, unit_data));
-                });
-                start();
-            });
+        getData(`get_battle.php`).then((battle_data) => {
+            load(battle_data);
+        });
     };
 </script>
 
 <script>
-    const getData = (endpoint) => {
+    const getData = (endpoint, qs) => {
         return new Promise((resolve, reject) => {
             let request = new XMLHttpRequest();
+            if (qs) {
+                endpoint += qs
+            }
             request.open('GET', endpoint, true);
 
             request.onload = function() {

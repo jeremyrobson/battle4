@@ -45,4 +45,22 @@ class Unit {
             "sta" => 100
         ]);
     }
+
+    public static function getUnits($party_id) {
+        $db = new DB();
+
+        $results = $db
+            ->query("unit")
+            ->where("party_id", $party_id)
+            ->execute()
+            ->fetchAll();
+
+        $units = [];
+
+        foreach ($results as $result) {
+            $units[] = new Unit($result);
+        }
+
+        return $units;
+    }
 }

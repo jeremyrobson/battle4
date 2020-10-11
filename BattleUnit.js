@@ -1,24 +1,22 @@
 class BattleUnit {
     constructor(party, unit_data) {
-        var job_template = job_templates[unit_data.job_id];
-
         this.unit_id = unit_data.unit_id;
         this.name = unit_data.name;
-        this.sprite = job_template.sprite;
+        this.sprite = unit_data.job.sprite;
         this.party_id = unit_data.party_id;
         this.color = party.color;
         this.job_id = unit_data.job_id;
-        this.hp = unit_data.hp;
+        this.hp = parseInt(unit_data.hp);
         this.mp = 100;
         this.ct = 0; //todo: change to sta
         this.str = 10;
-        this.agl = unit_data.agl;
+        this.agl = parseInt(unit_data.agl);
         this.mag = 5;
         this.dead = false;
         this.acted = false;
         this.done = true;
-        this.actions = job_template.actions;
-        this.move_cost = job_template.move_cost;
+        this.actions = unit_data.job.actions;
+        this.move_cost = unit_data.job.move_cost;
 
         this.x = 0;
         this.y = 0;
@@ -56,14 +54,14 @@ class BattleUnit {
         //the best action is the one with the highest damage + longest range + shortest distance
         //also the target with lowest hp
         //todo: factor in move_cost, action_cost, target status (critical)
-        this.actions.forEach((action_type) => {
-            var action_template = action_templates[action_type];
+        Object.keys(this.actions).forEach((action_id) => {
+            var action_data = this.actions[action_id];
             enemies.forEach((enemy) => {
                 var distance = getDistance(this, enemy);
-                var action = new BattleAction(action_type, this, enemy);
-                var value = action_template.range*RANGE_WEIGHT + action.calculateTotalDamage(map) - distance;
+                var action = new BattleAction(action_data, this, enemy);
+                var value = action_data.range*RANGE_WEIGHT + action.calculateTotalDamage(map) - distance;
                 scores.push({
-                    action_type: action_type,
+                    action_id: action_id,
                     target: enemy,
                     value: value
                 });
@@ -76,7 +74,7 @@ class BattleUnit {
 
         var best_score = scores.pop();
 
-        return new BattleAction(best_score.action_type, this, best_score.target);
+        return new BattleAction(this.actions[best_score.action_id], this, best_score.target);
     }
 
     turn(map) {

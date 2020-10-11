@@ -27,7 +27,7 @@ class Action {
             ->fetchAll();
         $objects = [];
         foreach ($actions as $action) {
-            $objects[$action["name"]] = new Action($action);
+            $objects[$action["action_id"]] = new Action($action);
         }
         return $objects;
     }
