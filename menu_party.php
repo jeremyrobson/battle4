@@ -20,5 +20,5 @@
 </div>
 
 <div>
-    <a href="index.php?page=new_unit&party_id=<?=$party_id?>">New Unit</a>
+    <a href="index.php?page=new_unit&party_id=<?=$party_id?>">Hire Unit</a>
 </div>

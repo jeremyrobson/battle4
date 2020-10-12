@@ -70,8 +70,9 @@ class Battle {
         this.map.draw(ctx, this.q.next);
 
         ctx.font = "12px monospace";
-        ctx.fillStyle = "rgb(255,255,0)";
+        ctx.fillStyle = player.color;
         ctx.fillText(`Friendlies: ${this.unit_count[player.party_id]}`, 0, 0);
+        ctx.fillStyle = cpu.color;
         ctx.fillText(`Enemies: ${this.unit_count[cpu.party_id]}`, 0, 12);
     }
 

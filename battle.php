@@ -80,8 +80,8 @@
     function load(battle_data) {
         console.log(battle_data);
 
-        player = new Party(battle_data["player"], random_color(50, 200, 0, 100, 50, 200));
-        cpu = new Party(battle_data["enemy"], random_color(50, 200, 0, 100, 50, 200));
+        player = new Party(battle_data["player"]);
+        cpu = new Party(battle_data["enemy"]);
 
         start();
     }

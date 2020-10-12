@@ -1,10 +1,11 @@
 class BattleUnit {
     constructor(party, unit_data) {
+        this.party = party;
         this.unit_id = unit_data.unit_id;
         this.name = unit_data.name;
         this.sprite = unit_data.job.sprite;
         this.party_id = unit_data.party_id;
-        this.color = party.color;
+        this.color = unit_data.color;
         this.job_id = unit_data.job_id;
         this.hp = parseInt(unit_data.hp);
         this.mp = parseInt(unit_data.mp);
@@ -18,7 +19,6 @@ class BattleUnit {
         this.done = true;
         this.actions = unit_data.job.actions;
         this.move_cost = unit_data.job.move_cost;
-
         this.x = 0;
         this.y = 0;
     }
@@ -127,7 +127,7 @@ class BattleUnit {
             } else {
                 //console.log("living friends", map.getFriends(this, true).length);
                 //run away if critical but still have friends left
-                if (this.critical() && map.getFriends(this, true, true).length > 1) {
+                if (this.critical() && map.getFriends(this, true, true).length > 0) {
                     target = map.getSafety(this);
                 }
 
