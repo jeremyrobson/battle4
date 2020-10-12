@@ -43,11 +43,11 @@ class Battle {
         }).length;
 
         if (this.unit_count[player.party_id] === 0) {
-            this.done("You Lose!", "rgb(255,0,0)");
+            this.lose();
             return false;
         }
         if (this.unit_count[cpu.party_id] === 0) {
-            this.done("You Win!", "rgb(255,255,0)");
+            this.win();
             return false;
         }
         return true;
@@ -75,10 +75,27 @@ class Battle {
         ctx.fillText(`Enemies: ${this.unit_count[cpu.party_id]}`, 0, 12);
     }
 
+    win() {
+        this.done("You Win!", "rgb(255,255,0)");
+        this.winner = this.player.party_id;
+    }
+
+    lose() {
+        this.done("You Lose!", "rgb(255,0,0)");
+        this.winner = "enemy";
+    }
+
     done(text, color) {
         addSprite(new BattleText(text, 100, 100, 50, color, 200, () => {
             this.ondone();
         }));
         this.status = "done";
+    }
+
+    getBattleData() {
+        return {
+            player: this.player,
+            enemy: this.cpu
+        }
     }
 }

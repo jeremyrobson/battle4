@@ -35,6 +35,7 @@ $count = random_int(1, 10);
 
 for ($i=0; $i<$count; $i++) {
     $unit = Unit::generateUnit("cpu");
+    $unit->unit_id = uniqid();
     $unit->job = $battle["jobs"][$unit->job_id];
     $battle["enemy"]["units"][] = $unit;
 }

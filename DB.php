@@ -77,8 +77,8 @@ class DB {
         $placeholders = [];
         $values = [];
         foreach ($object as $key => $value) {
-            $keys[] = $key;
-            $placeholders[] = ":$key";
+            $keys[$key] = $key;
+            $placeholders[$key] = ":$key";
             $values[$key] = $value;
         }
         $keys = implode(",", $keys);
@@ -89,6 +89,26 @@ class DB {
         $this->stmt->execute($values);
 
         return self::$conn->lastInsertId();
+    }
+
+    public function update($table, $object, $id) {
+        $keys = [];
+        $placeholders = [];
+        $values = [];
+        $assignments = [];
+        foreach ($object as $key => $value) {
+            $keys[$key] = $key;
+            $placeholders[$key] = ":$key";
+            $values[$key] = $value;
+        }
+        foreach ($keys as $k => $key) {
+            $assignments[] = "$key = {$placeholders[$k]}";
+        }
+        $assignments = implode(",", $assignments);
+
+        $this->sql = "UPDATE $table SET $assignments WHERE $id = {$object->$id}";
+        $this->stmt = self::$conn->prepare($this->sql);
+        $this->stmt->execute($values);
     }
 
     public function __destruct() {

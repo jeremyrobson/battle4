@@ -9,25 +9,36 @@ class Unit {
     public $job_id;
     public $name;
     public $hp;
+    public $mp;
+    public $str;
     public $agl;
     public $sta;
+    public $mag;
 
     public function __construct($params) {
-        $this->unit_id = @$params["unit_id"] ?? uniqid();
-        $this->party_id = $params["party_id"];
+        $this->unit_id = @$params["unit_id"];
+        $this->party_id = @$params["party_id"];
         $this->job_id = $params["job_id"];
         $this->name = $params["name"];
-        $this->hp = $params["hp"];
-        $this->agl = $params["agl"];
-        $this->sta = $params["sta"];
+        $this->hp = intval($params["hp"]);
+        $this->mp = intval($params["mp"]);
+        $this->str = intval($params["str"]);
+        $this->agl = intval( $params["agl"]);
+        $this->sta = intval($params["sta"]);
+        $this->mag = intval($params["mag"]);
     }
 
-    public static function insertUnit($user_id, $party_id, $params) {
+    /**
+     * @param int $user_id
+     * @param int $party_id
+     * @param Unit $unit
+     * @return int
+     */
+    public static function insertUnit($user_id, $party_id, $unit) {
         $db = new DB();
 
         //todo: validate user_id
 
-        $unit = new Unit($params);
         $unit->party_id = $party_id;
         return $db->insert("unit", $unit);
     }
@@ -41,7 +52,10 @@ class Unit {
             "job_id" => $job->job_id,
             "name" => NameGenerator::generate_name(),
             "hp" => 100,
+            "mp" => 100,
+            "str" => random_int(3, 9),
             "agl" => random_int(3, 9),
+            "mag" => random_int(3, 9),
             "sta" => 100
         ]);
     }
@@ -62,5 +76,17 @@ class Unit {
         }
 
         return $units;
+    }
+
+    public static function getUnit($unit_id) {
+        $db = new DB();
+
+        $result = $db
+            ->query("unit")
+            ->where("unit_id", $unit_id)
+            ->execute()
+            ->fetch();
+
+        return new Unit($result);
     }
 }

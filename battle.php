@@ -87,38 +87,18 @@
     }
 
     function done() {
-        console.log("redirect");
+        let battle_data = game_state.getBattleData();
+        let br = document.getElementById("battle_results");
+        br.value = JSON.stringify(battle_data);
+        document.getElementById("battle_results_form").submit();
     }
 
     window.onload = function() {
-        getData(`get_battle.php`).then((battle_data) => {
-            load(battle_data);
-        });
-    };
-</script>
-
-<script>
-    const getData = (endpoint, qs) => {
-        return new Promise((resolve, reject) => {
-            let request = new XMLHttpRequest();
-            if (qs) {
-                endpoint += qs
-            }
-            request.open('GET', endpoint, true);
-
-            request.onload = function() {
-                if (this.status >= 200 && this.status < 400) {
-                    resolve(JSON.parse(this.response));
-                } else {
-                    reject();
-                }
-            };
-
-            request.onerror = function() {
-                // There was a connection error of some sort
-            };
-
-            request.send();
-        });
+        fetch("get_battle.php")
+            .then((response) => {
+                response.json().then(function(battle_data) {
+                    load(battle_data);
+                });
+            });
     };
 </script>

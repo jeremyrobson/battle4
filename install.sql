@@ -22,8 +22,11 @@ CREATE TABLE `unit` (
   `job_id` INT NOT NULL,
   `name` VARCHAR(255),
   `hp` SMALLINT,
+  `mp` SMALLINT,
+  `str` SMALLINT,
   `agl` SMALLINT,
   `sta` SMALLINT,
+  `mag` SMALLINT,
   PRIMARY KEY (`unit_id`)
 );
 

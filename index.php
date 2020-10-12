@@ -48,6 +48,14 @@ error_reporting(E_ALL);
     <div>
 
         <?php
+            if (isset($_SESSION["messages"]) && is_array($_SESSION["messages"])) {
+                while ($message = array_shift($_SESSION["messages"])) {
+                    echo "<h1>$message</h1>";
+                }
+            }
+        ?>
+
+        <?php
 
         $page = $_GET["page"] ?? "menu_user";
 

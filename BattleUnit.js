@@ -7,11 +7,12 @@ class BattleUnit {
         this.color = party.color;
         this.job_id = unit_data.job_id;
         this.hp = parseInt(unit_data.hp);
-        this.mp = 100;
-        this.ct = 0; //todo: change to sta
-        this.str = 10;
+        this.mp = parseInt(unit_data.mp);
+        this.str = parseInt(unit_data.str);
         this.agl = parseInt(unit_data.agl);
-        this.mag = 5;
+        this.sta = parseInt(unit_data.sta);
+        this.mag = parseInt(unit_data.mag);
+        this.ct = 0; //todo: change to sta
         this.dead = false;
         this.acted = false;
         this.done = true;
@@ -52,7 +53,7 @@ class BattleUnit {
         //for each action look at each enemy
         //for each enemy, calculate damage, and look at action range
         //the best action is the one with the highest damage + longest range + shortest distance
-        //also the target with lowest hp
+        //also the target with lowest hp?
         //todo: factor in move_cost, action_cost, target status (critical)
         Object.keys(this.actions).forEach((action_id) => {
             var action_data = this.actions[action_id];
