@@ -1,6 +1,5 @@
 class BattleUnit {
     constructor(party, unit_data) {
-        this.party = party;
         this.unit_id = unit_data.unit_id;
         this.name = unit_data.name;
         this.sprite = unit_data.job.sprite;
@@ -21,6 +20,7 @@ class BattleUnit {
         this.move_cost = unit_data.job.move_cost;
         this.x = 0;
         this.y = 0;
+        this.starting_point = party.starting_point;
     }
 
     getText() {

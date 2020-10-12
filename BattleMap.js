@@ -66,7 +66,6 @@ class BattleMap {
     }
 
     getFriends(unit, alive, healthy) {
-        console.log(unit.party_id, unit.unit_id);
         return this.units.filter(function(u) {
             return unit.party_id === u.party_id
                 && unit.unit_id !== u.unit_id
@@ -92,7 +91,7 @@ class BattleMap {
 
     //the safest possible area, todo: heatmap
     getSafety(unit) {
-        return unit.party.starting_point;
+        return unit.starting_point;
     }
 
     draw(ctx, activeUnit) {
