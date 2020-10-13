@@ -1,5 +1,5 @@
 Array.prototype.pick_random = function() {
-    return this[rand(0, this.length)];
+    return this[randint(0, this.length)];
 };
 
 function clamp(value, min, max) {
@@ -8,7 +8,7 @@ function clamp(value, min, max) {
     return value;
 }
 
-function rand(min, max) {
+function randint(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
@@ -26,8 +26,12 @@ function getDistance(a, b) {
 }
 
 function random_color(r0, r1, g0, g1, b0, b1) {
-    var r = rand(r0, r1);
-    var g = rand(g0, g1);
-    var b = rand(b0, b1);
+    var r = randint(r0, r1);
+    var g = randint(g0, g1);
+    var b = randint(b0, b1);
     return `rgb(${r},${g},${b})`;
+}
+
+function roll_dice(fix) {
+    return fix || randint(1, 7);
 }

@@ -55,12 +55,13 @@ class Battle {
     }
 
     update(timestamp) {
-        if (Math.floor(timestamp / 100) > this.last) { //one tick per second
+        let tick = timestamp / 500;
+        if (Math.floor(tick) > this.last) { //one tick per second
             if (this.checkBattle()) {
                 this.text = this.q.update(this.map);
             }
 
-            this.last = Math.floor(timestamp / 100);
+            this.last = Math.floor(tick);
         }
     }
 

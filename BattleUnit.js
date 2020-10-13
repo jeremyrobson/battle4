@@ -8,6 +8,7 @@ class BattleUnit {
         this.job_id = unit_data.job_id;
         this.hp = parseInt(unit_data.hp);
         this.mp = parseInt(unit_data.mp);
+        this.def = randint(1,10);
         this.str = parseInt(unit_data.str);
         this.agl = parseInt(unit_data.agl);
         this.sta = parseInt(unit_data.sta);
@@ -64,7 +65,8 @@ class BattleUnit {
                 scores.push({
                     action_id: action_id,
                     target: enemy,
-                    value: value
+                    value: value,
+                    distance: distance
                 });
             });
         });
@@ -74,7 +76,6 @@ class BattleUnit {
         });
 
         var best_score = scores.pop();
-
         return new BattleAction(this.actions[best_score.action_id], this, best_score.target);
     }
 
@@ -101,6 +102,7 @@ class BattleUnit {
             var action = this.selectAction(map);
 
             target = action.target;
+
             distance = getDistance(this, target);
 
             if (distance <= action.range) {

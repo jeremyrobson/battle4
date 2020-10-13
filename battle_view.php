@@ -49,13 +49,14 @@
     let textarea = document.getElementById("textarea");
     let game_state = null;
     let sprites = [];
+    let paused = false;
 
     function addSprite(sprite) {
         sprites.push(sprite);
     }
 
     function update(timestamp) {
-        if (game_state.status !== "done") {
+        if (game_state.status !== "done" && !paused) {
             game_state.update(timestamp);
         }
 
@@ -92,6 +93,10 @@
             battle_code: battle_code
         },done);
         update();
+    }
+
+    function pause() {
+        paused = true;
     }
 
     function load(battle_data) {
