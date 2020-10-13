@@ -2,7 +2,7 @@
     $jobs = Job::getJobs();
     $party_id = $_GET["party_id"];
     $party = Party::getParty($_SESSION["user_id"], $party_id);
-    $units = Unit::getUnits($party_id);
+    $units = Unit::getUnitsByPartyId($party_id);
 ?>
 
 <h2>

@@ -1,15 +1,16 @@
 class Battle {
 
-    constructor(width, height, player, cpu, fn) {
+    constructor(params, fn) {
+        this.battle_code = params.battle_code;
         this.q = new BattleQueue();
-        this.map = new BattleMap(width, height);
+        this.map = new BattleMap(params.width, params.height);
         this.ondone = fn instanceof Function ? fn : function() { };
         this.text = "";
 
         this.units = [];
 
-        this.player = player;
-        this.cpu = cpu;
+        this.player = params.player;
+        this.cpu = params.cpu;
 
         this.player.units.forEach((unit) => {
             this.q.add(unit);
@@ -95,6 +96,8 @@ class Battle {
 
     getBattleData() {
         return {
+            battle_code: this.battle_code,
+            winner: this.winner,
             player: this.player,
             enemy: this.cpu
         }

@@ -15,6 +15,11 @@ class Party {
         $this->units = [];
     }
 
+    /**
+     * @param int $user_id
+     * @param int $party_id
+     * @return Party
+     */
     public static function getParty($user_id, $party_id) {
         $db = new DB();
 
@@ -31,6 +36,10 @@ class Party {
         return $party;
     }
 
+    /**
+     * @param int $user_id
+     * @return Party[]
+     */
     public static function getParties($user_id) {
         $db = new DB();
 
@@ -44,13 +53,6 @@ class Party {
 
         foreach ($results as $arr) {
             $party = new Party($arr);
-
-            $party->units = $db
-                ->query("unit")
-                ->where("party_id", $arr["party_id"])
-                ->execute()
-                ->fetchAll();
-
             $parties[$arr["party_id"]] = $party;
         }
 

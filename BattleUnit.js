@@ -144,7 +144,7 @@ class BattleUnit {
             if (!this.acted) {
                 //if movement drained the ct, the unit cannot act
                 //therefore the selected action must take ct into account?
-                console.error(this.name + " failed to invoke action", this.ct);
+                //console.error(this.name + " failed to invoke action", this.ct);
             }
             this.ct = 0;
             this.done = true;

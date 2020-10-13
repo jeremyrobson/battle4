@@ -22,11 +22,14 @@
     }
 ?>
 
-<form action="index.php?page=new_unit&party_id=<?=$party_id?>" method="post">
-    <label for="funds"></label>
-    <div id="funds">Funds: <?=$user->funds;?></div>
+<h2>Unit Academy</h2>
 
-    <h2>Hire this unit?</h2>
+<label for="funds"></label>
+<div id="funds">Available Funds: <?=$user->funds;?></div>
+
+<form action="index.php?page=new_unit&party_id=<?=$party_id?>" method="post">
+
+    <h3>Hire this unit?</h3>
 
     <div style="flex: 1 1 150px;">
         <table>

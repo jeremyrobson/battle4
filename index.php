@@ -33,10 +33,13 @@ error_reporting(E_ALL);
 
         <ul>
             <li>
-                <a href="index.php?page=battle">Start</a>
+                <a href="index.php?page=battle_view">Start Battle</a>
             </li>
             <li>
-                <a href="index.php?page=menu_user">View Parties</a>
+                <a href="index.php?page=menu_profile">View Profile</a>
+            </li>
+            <li>
+                <a href="index.php?page=menu_parties">View Parties</a>
             </li>
             <li>
                 <a href="logout.php">Logout</a>
@@ -57,7 +60,7 @@ error_reporting(E_ALL);
 
         <?php
 
-        $page = $_GET["page"] ?? "menu_user";
+        $page = $_GET["page"] ?? "menu_profile";
 
         require_once("$page.php");
 

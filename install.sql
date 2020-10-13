@@ -54,6 +54,16 @@ CREATE TABLE `job_action` (
   PRIMARY KEY (`job_action_id`)
 );
 
+CREATE TABLE `battle` (
+  `battle_id` INT NOT NULL AUTO_INCREMENT,
+  `battle_code` VARCHAR(255) NOT NULL,
+  `party_id` INT NOT NULL,
+  `winner` VARCHAR(255),
+  `funds` INT,
+  `points` INT,
+  PRIMARY KEY (`battle_id`)
+);
+
 INSERT INTO `job` (`job_id`, `name`, `sprite`, `move_cost`)
 VALUES
 (1, 'Fighter', 'F', 20),

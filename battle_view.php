@@ -1,5 +1,16 @@
+<?php
+    require_once("Battle.php");
+    $parties = Party::getParties($_SESSION['user_id']);
+    $party = reset($parties);
+    $battle = new Battle([
+            "party_id" => $party->party_id
+    ]);
+    $battle->save();
+?>
+
 <script>
     const user_id = "<?=$_SESSION['user_id']?>";
+    const battle_code = "<?=$battle->battle_code?>";
 
     const TILE_WIDTH = 40;
     const TILE_HEIGHT = 30;
@@ -73,7 +84,13 @@
     //todo: get party instead of just units which includes name, color, etc.
     function start() {
         console.log("Starting Battle...");
-        game_state = new Battle(16, 16, player, cpu, done);
+        game_state = new Battle({
+            width: 16,
+            height: 16,
+            player: player,
+            cpu: cpu,
+            battle_code: battle_code
+        },done);
         update();
     }
 
@@ -94,7 +111,7 @@
     }
 
     window.onload = function() {
-        fetch("get_battle.php")
+        fetch(`get_battle_data.php?battle_code=${battle_code}`)
             .then((response) => {
                 response.json().then(function(battle_data) {
                     load(battle_data);

@@ -60,7 +60,11 @@ class Unit {
         ]);
     }
 
-    public static function getUnits($party_id) {
+    /**
+     * @param int $party_id
+     * @return Unit[]
+     */
+    public static function getUnitsByPartyId($party_id) {
         $db = new DB();
 
         $results = $db
@@ -88,5 +92,16 @@ class Unit {
             ->fetch();
 
         return new Unit($result);
+    }
+
+    public function save() {
+        $db = new DB();
+
+        if ($this->unit_id) {
+            $db->update("unit", $this, "unit_id");
+        }
+        else {
+            $db->insert("unit", $this);
+        }
     }
 }
