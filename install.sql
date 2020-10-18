@@ -78,6 +78,52 @@ CREATE TABLE `spoils` (
   PRIMARY KEY (`spoils_id`)
 );
 
+CREATE TABLE `item` (
+  `item_id` INT NOT NULL AUTO_INCREMENT,
+  `slot_id` INT NULL,
+  `type` VARCHAR(255) NOT NULL,
+  `subtype` VARCHAR(255) NOT NULL,
+  `job_id` INT NULL,
+  `pwr` SMALLINT,
+  `def` SMALLINT,
+  `hp` SMALLINT,
+  `mp` SMALLINT,
+  `str` SMALLINT,
+  `agl` SMALLINT,
+  `sta` SMALLINT,
+  `mag` SMALLINT,
+  `cost` INT DEFAULT 1,
+  PRIMARY KEY (`item_id`)
+);
+
+CREATE TABLE `slot` (
+  `slot_id` INT NOT NULL,
+  `name` VARCHAR(255)
+);
+
+CREATE TABLE `item_job` (
+  `item_job_id` INT NOT NULL AUTO_INCREMENT,
+  `item_id` INT NOT NULL,
+  `job_id` INT NOT NULL,
+  PRIMARY KEY (`item_job_id`)
+);
+
+CREATE TABLE `item_party` (
+  `item_party_id` INT NOT NULL AUTO_INCREMENT,
+  `item_id` INT NOT NULL,
+  `party_id` INT NOT NULL,
+  PRIMARY KEY (`item_party_id`)
+);
+
+CREATE TABLE `item_unit_slot` (
+  `item_party_id` INT NOT NULL AUTO_INCREMENT,
+  `item_id` INT NOT NULL,
+  `unit_id` INT NOT NULL,
+  `slot_id` INT NOT NULL,
+  PRIMARY KEY (`item_party_id`),
+  UNIQUE KEY `slotted_item` (`item_id`, `unit_id`, `slot_id`)
+);
+
 INSERT INTO `job` (`job_id`, `name`, `sprite`, `move_cost`)
 VALUES
 (1, 'Fighter', 'F', 20),
@@ -95,3 +141,11 @@ VALUES
 (1, 1),
 (2, 2),
 (3, 3);
+
+INSERT INTO `slot` (`slot_id`, `name`)
+VALUES
+(1, 'right'),
+(2, 'left'),
+(3, 'head'),
+(4, 'body'),
+(5, 'accessory');

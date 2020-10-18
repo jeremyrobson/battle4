@@ -7,6 +7,7 @@ if (!isset($_SESSION["username"])) {
 }
 
 require_once("DB.php");
+require_once("constants.php");
 require_once("Party.php");
 require_once("Job.php");
 
@@ -40,6 +41,9 @@ error_reporting(E_ALL);
             </li>
             <li>
                 <a href="index.php?page=menu_parties">View Parties</a>
+            </li>
+            <li>
+                <a href="index.php?page=menu_shop">View Shop</a>
             </li>
             <li>
                 <a href="logout.php">Logout</a>
