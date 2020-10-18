@@ -5,16 +5,18 @@ require_once("DB.php");
 class Battle {
     public $battle_id;
     public $battle_code;
-    public $party_id;
-    public $winner;
+    public $home_id;
+    public $away_id;
+    public $winner_id;
     public $funds;
     public $points;
 
     public function __construct($params) {
         $this->battle_id = @$params["battle_id"];
         $this->battle_code = $params["battle_code"] ?? uniqid();
-        $this->party_id = $params["party_id"];
-        $this->winner = @$params["winner"];
+        $this->home_id = $params["home_id"];
+        $this->away_id = $params["away_id"];
+        $this->winner_id = @$params["winner_id"];
         $this->funds = @$params["funds"];
         $this->points = @$params["points"];
     }

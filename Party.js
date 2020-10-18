@@ -6,8 +6,8 @@ class Party {
         this.units = [];
         this.starting_point = party_data.starting_point;
 
-        party_data["units"].forEach((unit_data) => {
-            this.units.push(new BattleUnit(this, unit_data));
+        Object.keys(party_data["units"]).forEach((unit_id) => {
+            this.units.push(new BattleUnit(this, party_data["units"][unit_id]));
         });
     }
 

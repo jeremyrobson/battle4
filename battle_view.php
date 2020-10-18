@@ -3,6 +3,7 @@
 require_once("Battle.php");
 require_once("Unit.php");
 require_once("Spoils.php");
+require_once("Party.php");
 
 $battle_code = $_GET["battle_code"];
 
@@ -10,7 +11,9 @@ $battle = Battle::getBattleByCode($battle_code);
 
 $spoils = Spoils::getSpoils("battle_id", $battle->battle_id);
 
-$units = Unit::getUnitsByPartyId($battle->party_id);
+$units = Unit::getUnitsByPartyId($battle->winner_id);
+
+$winner = Party::getParty($battle->winner_id);
 
 ?>
 
@@ -19,12 +22,7 @@ $units = Unit::getUnitsByPartyId($battle->party_id);
 <div>
     <h3>Result:
         <?php
-            if ($battle->party_id === $battle->winner) {
-                echo "Decisive Victory";
-            }
-            else {
-                echo "Total Defeat";
-            }
+            echo "Decisive victory for $winner->name";
         ?>
     </h3>
 </div>

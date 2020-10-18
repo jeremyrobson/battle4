@@ -1,10 +1,13 @@
 <?php
 
 require_once("Battle.php");
+require_once("Party.php");
 
 $party_id = $_GET["party_id"];
 
-$battles = Battle::getBattles("party_id", $party_id);
+$home_battles = Battle::getBattles("home_id", $party_id);
+$away_battles = Battle::getBattles("away_id", $party_id);
+$battles = array_merge($home_battles, $away_battles);
 
 ?>
 
@@ -28,7 +31,7 @@ $battles = Battle::getBattles("party_id", $party_id);
                     </a>
                 </td>
                 <td>
-                    <?=$battle->winner?>
+                    <?=Party::getParty($battle->winner_id)->name?>
                 </td>
             </tr>
             <?php endforeach; ?>

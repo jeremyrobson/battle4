@@ -1,9 +1,28 @@
 <?php
+
     require_once("Battle.php");
+
     $parties = Party::getParties($_SESSION['user_id']);
-    $party = reset($parties);
+    $home = reset($parties);
+
+    //generate enemy
+    $away = new Party([
+            "name" => "cpu"
+    ]);
+
+    $away->save();
+
+    $enemy_count = random_int(1, 9);
+    $enemy_party = [];
+    for ($i=0; $i < $enemy_count; $i++) {
+        $unit = Unit::generateUnit($away->party_id);
+        $unit->save();
+        $enemy_party[$unit->unit_id] = $unit;
+    }
+
     $battle = new Battle([
-            "party_id" => $party->party_id
+            "home_id" => $home->party_id,
+        "away_id" => $away->party_id
     ]);
     $battle->save();
 ?>
@@ -102,8 +121,8 @@
     function load(battle_data) {
         console.log(battle_data);
 
-        player = new Party(battle_data["player"]);
-        cpu = new Party(battle_data["enemy"]);
+        player = new Party(battle_data["home"]);
+        cpu = new Party(battle_data["away"]);
 
         start();
     }

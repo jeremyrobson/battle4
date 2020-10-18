@@ -9,10 +9,9 @@ class Party {
     public $name;
 
     public function __construct($params) {
-        $this->party_id = $params["party_id"];
-        $this->user_id = $params["user_id"];
+        $this->party_id = @$params["party_id"];
+        $this->user_id = @$params["user_id"];
         $this->name = $params["name"];
-        $this->units = [];
     }
 
     /**
@@ -20,13 +19,12 @@ class Party {
      * @param int $party_id
      * @return Party
      */
-    public static function getParty($user_id, $party_id) {
+    public static function getParty($party_id) {
         $db = new DB();
 
         $result = $db
             ->query("party")
-            ->query("party")
-            ->where("user_id", $user_id)
+            //->where("user_id", $user_id)
             ->where("party_id", $party_id)
             ->execute()
             ->fetch();
@@ -59,12 +57,15 @@ class Party {
         return $parties;
     }
 
-    public static function insertParty($user_id, $params) {
+    public function save() {
         $db = new DB();
-        $party = new stdClass(); //units makes this not work with class definition
-        $party->user_id = $user_id;
-        $party->name = $params["name"];
-        return $db->insert("party", $party);
+
+        if ($this->party_id) {
+            $db->update("party", $this, "party_id");
+        }
+        else {
+            $this->party_id = $db->insert("party", $this);
+        }
     }
 
 }

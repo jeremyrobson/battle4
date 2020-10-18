@@ -11,7 +11,7 @@ CREATE TABLE `user` (
 
 CREATE TABLE `party` (
   `party_id` INT NOT NULL AUTO_INCREMENT,
-  `user_id` INT NOT NULL,
+  `user_id` INT NULL,
   `name` VARCHAR(255),
   PRIMARY KEY (`party_id`)
 );
@@ -57,10 +57,11 @@ CREATE TABLE `job_action` (
 CREATE TABLE `battle` (
   `battle_id` INT NOT NULL AUTO_INCREMENT,
   `battle_code` VARCHAR(255) NOT NULL,
-  `party_id` INT NOT NULL,
-  `winner` VARCHAR(255),
-  `funds` INT,
-  `points` INT,
+  `home_id` INT NOT NULL,
+  `away_id` INT NOT NULL,
+  `winner_id` INT,
+  `funds` INT DEFAULT 0,
+  `points` INT DEFAULT 0,
   PRIMARY KEY (`battle_id`)
 );
 
@@ -72,7 +73,7 @@ CREATE TABLE `spoils` (
   `party_id` INT NOT NULL,
   `unit_id` INT NOT NULL,
   `value` INT,
-  `item_id` INT,
+  `item_id` INT NULL,
   `applied` BOOLEAN,
   PRIMARY KEY (`spoils_id`)
 );

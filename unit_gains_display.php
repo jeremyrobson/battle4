@@ -23,17 +23,17 @@
         <tr>
             <th>STR</th>
             <td><?=$unit->str?></td>
-            <td><?=format_gain(@$u["gains"]["str"])?></td>
+            <td><?=format_gain(@$unit_gains[$unit_id]["str"])?></td>
         </tr>
         <tr>
             <th>AGL</th>
             <td><?=$unit->agl?></td>
-            <td><?=format_gain(@$u["gains"]["agl"])?></td>
+            <td><?=format_gain(@$unit_gains[$unit_id]["agl"])?></td>
         </tr>
         <tr>
             <th>MAG</th>
             <td><?=$unit->mag?></td>
-            <td><?=format_gain(@$u["gains"]["mag"])?></td>
+            <td><?=format_gain(@$unit_gains[$unit_id]["mag"])?></td>
         </tr>
         <tr>
             <th>STA</th>

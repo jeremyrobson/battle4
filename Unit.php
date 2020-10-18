@@ -76,7 +76,7 @@ class Unit {
         $units = [];
 
         foreach ($results as $result) {
-            $units[] = new Unit($result);
+            $units[$result["unit_id"]] = new Unit($result);
         }
 
         return $units;

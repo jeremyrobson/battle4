@@ -11,42 +11,44 @@ function format_gain($value) {
 $jobs = Job::getJobs();
 
 $battle_results = json_decode($_POST["battle_results"], true);
-
-$player = $battle_results["player"];
-$enemy = $battle_results["enemy"];
 $battle = Battle::getBattleByCode($battle_results["battle_code"]);
-$enemy_count = count($enemy["units"]);
 
-if ($battle_results["winner"] === "enemy") {
+$winner = Party::getParty($battle_results["winner"]);
+$loser = Party::getParty($battle_results["loser"]);
+
+$winner_units = Unit::getUnitsByPartyId($winner->party_id);
+$loser_units = Unit::getUnitsByPartyId($loser->party_id);
+
+if ($winner->user_id != $_SESSION["user_id"]) {
     $result = "Total Defeat";
-    $battle->winner = "enemy";
-    $battle->funds = 0;
-    $battle->points = 0;
+    $battle->winner_id = $winner->party_id;
     $battle->save();
 }
 else {
     $result = "Decisive Victory";
 
-    if (!$battle->winner) {
-        $battle->winner = $battle_results["winner"];
-        $battle->funds = $enemy_count * random_int(1, 25);
-        $battle->points = count($enemy["units"]);
+    $unit_gains = [];
+
+    if (empty($battle->winner_id)) {
+        $battle->winner_id = $winner->party_id;
+        $battle->funds = count($loser_units) * random_int(1, 25);
+        $battle->points = count($loser_units);
         $battle->save();
 
-        $user = User::getUserByUserId($_SESSION["user_id"]);
+        $user = User::getUserByUserId($winner->user_id);
         $user->funds += $battle->funds;
         $user->save();
 
         $stats = ["str", "agl", "mag"];
         for ($i = 0; $i < $battle->points; $i++) {
             $stat = $stats[array_rand($stats)];
-            $unit_id = array_rand($player["units"]);
+            $unit_id = array_rand($winner_units);
 
             $spoils = new Spoils([
                 "battle_id" => $battle->battle_id,
                 "type" => $stat,
-                "user_id" => $user->user_id,
-                "party_id" => $battle_results["winner"],
+                "user_id" => $winner->user_id,
+                "party_id" => $winner->party_id,
                 "unit_id" => $unit_id,
                 "value" => 1,
                 "item_id" => null,
@@ -55,19 +57,19 @@ else {
 
             $spoils->save();
 
-            if (isset($player["units"]["gains"][$stat])) {
-                $player["units"][$unit_id]["gains"][$stat] += 1;
+            if (isset($unit_gains[$unit_id][$stat])) {
+                $unit_gains[$unit_id][$stat] += 1;
             } else {
-                $player["units"][$unit_id]["gains"][$stat] = 1;
+                $unit_gains[$unit_id][$stat] = 1;
             }
         }
 
-        foreach ($player["units"] as $unit_id => $u) {
-            if (!isset($player["units"][$unit_id]["gains"])) {
+        foreach ($winner_units as $unit_id => $u) {
+            if (!isset($unit_gains[$unit_id])) {
                 continue;
             }
-            $unit = Unit::getUnit($u["unit_id"]);
-            foreach ($player["units"][$unit_id]["gains"] as $stat => $gain) {
+            $unit = Unit::getUnit($unit_id);
+            foreach ($unit_gains[$unit_id] as $stat => $gain) {
                 $unit->$stat += $gain;
             }
             $unit->save();
@@ -99,11 +101,7 @@ else {
 
 <?php
     $show_gains = true;
-    foreach ($player["units"] as $u):
-        $unit = Unit::getUnit($u["unit_id"]);
-        $unit->hp = $u["hp"];
-        $unit->mp = $u["mp"];
-        $unit->sta = $u["sta"];
+    foreach ($winner_units as $unit_id => $unit):
         require("unit_gains_display.php");
     endforeach;
     ?>
@@ -115,11 +113,7 @@ else {
 <div style="display:flex;">
 
     <?php
-    foreach ($enemy["units"] as $u):
-        $unit = new Unit($u);
-        $unit->hp = $u["hp"];
-        $unit->mp = $u["mp"];
-        $unit->sta = $u["sta"];
+    foreach ($loser_units as $unit_id => $unit):
         require("unit_display.php");
     endforeach;
     ?>

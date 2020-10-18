@@ -39,18 +39,20 @@ class Battle {
             return unit.party_id === player.party_id && unit.hp > 0;
         }).length;
 
-        this.unit_count[cpu.party_id] = this.units.filter(function(unit) {
-            return unit.party_id === cpu.party_id && unit.hp > 0;
-        }).length;
-
         if (this.unit_count[player.party_id] === 0) {
             this.lose();
             return false;
         }
+
+        this.unit_count[cpu.party_id] = this.units.filter(function(unit) {
+            return unit.party_id === cpu.party_id && unit.hp > 0;
+        }).length;
+
         if (this.unit_count[cpu.party_id] === 0) {
             this.win();
             return false;
         }
+
         return true;
     }
 
@@ -81,11 +83,13 @@ class Battle {
     win() {
         this.done("You Win!", "rgb(255,255,0)");
         this.winner = this.player.party_id;
+        this.loser = this.cpu.party_id;
     }
 
     lose() {
         this.done("You Lose!", "rgb(255,0,0)");
-        this.winner = "enemy";
+        this.winner = this.cpu.party_id;
+        this.loser = this.player.party_id;
     }
 
     done(text, color) {
@@ -99,8 +103,7 @@ class Battle {
         return {
             battle_code: this.battle_code,
             winner: this.winner,
-            player: this.player,
-            enemy: this.cpu
+            loser: this.loser
         }
     }
 }
