@@ -9,4 +9,5 @@
             </td>
         </tr>
     </table>
+    <a href="?page=menu_battles&party_id=<?=$party->party_id?>">View Battle Log</a>
 </div>

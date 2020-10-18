@@ -1,26 +1,28 @@
 <?php
     session_start();
 
-    if ($_SESSION["username"]) {
+    if (isset($_SESSION["username"])) {
         header("Location: index.php");
     }
 
     require_once("User.php");
 
-    $form = $_POST["form"];
+    if (isset($_POST["form"])) {
+        $form = $_POST["form"];
 
-    if (!empty($form)) {
-        $user = User::getUser("username", $form["username"]);
+        if (!empty($form)) {
+            $user = User::getUser("username", $form["username"]);
 
-        if (empty($user)) {
-            echo "Username or password incorrect!";
-        } else {
-            if (password_verify($form["password"], $user->password)) {
-                $_SESSION["username"] = $user->username;
-                $_SESSION["user_id"] = $user->user_id;
-                header("Location: index.php");
+            if (empty($user)) {
+                echo "Username or password incorrect!";
             } else {
-                echo "Password incorrect!";
+                if (password_verify($form["password"], $user->password)) {
+                    $_SESSION["username"] = $user->username;
+                    $_SESSION["user_id"] = $user->user_id;
+                    header("Location: index.php");
+                } else {
+                    echo "Password incorrect!";
+                }
             }
         }
     }

@@ -1,126 +1,77 @@
 <?php
-    require_once("Battle.php");
-    $parties = Party::getParties($_SESSION['user_id']);
-    $party = reset($parties);
-    $battle = new Battle([
-            "party_id" => $party->party_id
-    ]);
-    $battle->save();
+
+require_once("Battle.php");
+require_once("Unit.php");
+require_once("Spoils.php");
+
+$battle_code = $_GET["battle_code"];
+
+$battle = Battle::getBattleByCode($battle_code);
+
+$spoils = Spoils::getSpoils("battle_id", $battle->battle_id);
+
+$units = Unit::getUnitsByPartyId($battle->party_id);
+
 ?>
 
-<script>
-    const user_id = "<?=$_SESSION['user_id']?>";
-    const battle_code = "<?=$battle->battle_code?>";
+<h2>Battle: <?=$battle->battle_code?></h2>
 
-    const TILE_WIDTH = 40;
-    const TILE_HEIGHT = 30;
-    const RANGE_WEIGHT = 2; //how valuable range is over damage
+<div>
+    <h3>Result:
+        <?php
+            if ($battle->party_id === $battle->winner) {
+                echo "Decisive Victory";
+            }
+            else {
+                echo "Total Defeat";
+            }
+        ?>
+    </h3>
+</div>
 
-    let player = null;
-    let cpu = null;
-</script>
+<div>
+    <h3>Spoils</h3>
 
-<?php
-    $battle_scripts = [
-        "functions.js",
-        "Party.js",
-        "Battle.js",
-        "BattleAction.js",
-        "BattleMap.js",
-        "BattleUnit.js",
-        "BattleSprite.js",
-        "BattleQueue.js",
-        "BattleLine.js",
-        "BattleText.js",
-        "BattleDamage.js"
-    ];
+    <ul>
+        <li>Funds: +<?=$battle->funds?></li>
+        <li>Points: <?=$battle->points?></li>
+    </ul>
+</div>
 
-    foreach ($battle_scripts as $script) {
-        echo "<script src=\"{$script}\"></script>\n";
-    }
+<div>
+    <h3>Stat Increases</h3>
 
-    require_once("battle.html");
-?>
+    <table>
 
-<script>
-    let canvas = document.getElementById("canvas");
-    let context = canvas.getContext("2d");
-    context.textBaseline = "top";
-    let textarea = document.getElementById("textarea");
-    let game_state = null;
-    let sprites = [];
-    let paused = false;
+        <thead>
+            <tr>
+                <th>Unit</th>
+                <th>Type</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
 
-    function addSprite(sprite) {
-        sprites.push(sprite);
-    }
+            <?php foreach ($spoils as $spoil): ?>
 
-    function update(timestamp) {
-        if (game_state.status !== "done" && !paused) {
-            game_state.update(timestamp);
-        }
+            <tr>
 
-        textarea.innerHTML = game_state.text;
+                <td>
+                    <?=$units[$spoil->unit_id]->name ?>
+                </td>
 
-        sprites.forEach(function (sprite) {
-            sprite.update();
-        });
+                <td>
+                    <?=$spoil->type?>
+                </td>
 
-        sprites = sprites.filter(function(sprite) {
-            return !sprite.dead;
-        });
+                <td>
+                    +<?=$spoil->value?>
+                </td>
 
-        draw();
-        window.requestAnimationFrame(update);
-    }
+            </tr>
 
-    function draw() {
-        game_state.draw(context);
+            <?php endforeach; ?>
+        </tbody>
+    </table>
 
-        sprites.forEach(function (sprite) {
-            sprite.draw(context);
-        });
-    }
-
-    //todo: get party instead of just units which includes name, color, etc.
-    function start() {
-        console.log("Starting Battle...");
-        game_state = new Battle({
-            width: 16,
-            height: 16,
-            player: player,
-            cpu: cpu,
-            battle_code: battle_code
-        },done);
-        update();
-    }
-
-    function pause() {
-        paused = true;
-    }
-
-    function load(battle_data) {
-        console.log(battle_data);
-
-        player = new Party(battle_data["player"]);
-        cpu = new Party(battle_data["enemy"]);
-
-        start();
-    }
-
-    function done() {
-        let battle_data = game_state.getBattleData();
-        let br = document.getElementById("battle_results");
-        br.value = JSON.stringify(battle_data);
-        document.getElementById("battle_results_form").submit();
-    }
-
-    window.onload = function() {
-        fetch(`get_battle_data.php?battle_code=${battle_code}`)
-            .then((response) => {
-                response.json().then(function(battle_data) {
-                    load(battle_data);
-                });
-            });
-    };
-</script>
+</div>

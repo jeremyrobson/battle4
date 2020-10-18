@@ -35,4 +35,25 @@ class Battle {
         $result = $db->query("battle")->where("battle_code", $battle_code)->execute()->fetch();
         return new Battle($result);
     }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Battle[]
+     */
+    public static function getBattles($column, $value) {
+        if (!$column || !$value) {
+            return null;
+        }
+
+        $db = new DB();
+        $results = $db->query("battle")->where($column, $value)->execute()->fetchAll();
+
+        $battles = [];
+        foreach ($results as $result) {
+            $battles[$result["battle_id"]] = new Battle($result);
+        }
+
+        return $battles;
+    }
 }

@@ -64,6 +64,19 @@ CREATE TABLE `battle` (
   PRIMARY KEY (`battle_id`)
 );
 
+CREATE TABLE `spoils` (
+  `spoils_id` INT NOT NULL AUTO_INCREMENT,
+  `battle_id` INT NOT NULL,
+  `type` VARCHAR(255) NOT NULL,
+  `user_id` INT NOT NULL,
+  `party_id` INT NOT NULL,
+  `unit_id` INT NOT NULL,
+  `value` INT,
+  `item_id` INT,
+  `applied` BOOLEAN,
+  PRIMARY KEY (`spoils_id`)
+);
+
 INSERT INTO `job` (`job_id`, `name`, `sprite`, `move_cost`)
 VALUES
 (1, 'Fighter', 'F', 20),

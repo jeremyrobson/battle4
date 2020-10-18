@@ -107,6 +107,7 @@ class DB {
         $assignments = implode(",", $assignments);
 
         $this->sql = "UPDATE $table SET $assignments WHERE $id = {$object->$id}";
+        //echo "<pre>"; print_r($this->sql); echo "</pre>";
         $this->stmt = self::$conn->prepare($this->sql);
         $this->stmt->execute($values);
     }

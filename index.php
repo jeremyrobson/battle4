@@ -2,7 +2,7 @@
 
 session_start();
 
-if (!$_SESSION["username"]) {
+if (!isset($_SESSION["username"])) {
     header("Location: login.php");
 }
 
@@ -33,7 +33,7 @@ error_reporting(E_ALL);
 
         <ul>
             <li>
-                <a href="index.php?page=battle_view">Start Battle</a>
+                <a href="index.php?page=battle_start">Start Battle</a>
             </li>
             <li>
                 <a href="index.php?page=menu_profile">View Profile</a>

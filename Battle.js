@@ -55,7 +55,7 @@ class Battle {
     }
 
     update(timestamp) {
-        let tick = timestamp / 500;
+        let tick = timestamp / 100;
         if (Math.floor(tick) > this.last) { //one tick per second
             if (this.checkBattle()) {
                 this.text = this.q.update(this.map);

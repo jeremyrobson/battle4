@@ -2,6 +2,7 @@
 
 require_once("User.php");
 require_once("Battle.php");
+require_once("Spoils.php");
 
 function format_gain($value) {
     return !empty($value) ? "+$value" : '';
@@ -39,21 +40,34 @@ else {
         $stats = ["str", "agl", "mag"];
         for ($i = 0; $i < $battle->points; $i++) {
             $stat = $stats[array_rand($stats)];
-            $index = array_rand($player["units"]);
+            $unit_id = array_rand($player["units"]);
+
+            $spoils = new Spoils([
+                "battle_id" => $battle->battle_id,
+                "type" => $stat,
+                "user_id" => $user->user_id,
+                "party_id" => $battle_results["winner"],
+                "unit_id" => $unit_id,
+                "value" => 1,
+                "item_id" => null,
+                "applied" => true
+            ]);
+
+            $spoils->save();
 
             if (isset($player["units"]["gains"][$stat])) {
-                $player["units"][$index]["gains"][$stat] += 1;
+                $player["units"][$unit_id]["gains"][$stat] += 1;
             } else {
-                $player["units"][$index]["gains"][$stat] = 1;
+                $player["units"][$unit_id]["gains"][$stat] = 1;
             }
         }
 
-        foreach ($player["units"] as $index => $u) {
-            if (!isset($player["units"][$index]["gains"])) {
+        foreach ($player["units"] as $unit_id => $u) {
+            if (!isset($player["units"][$unit_id]["gains"])) {
                 continue;
             }
             $unit = Unit::getUnit($u["unit_id"]);
-            foreach ($player["units"][$index]["gains"] as $stat => $gain) {
+            foreach ($player["units"][$unit_id]["gains"] as $stat => $gain) {
                 $unit->$stat += $gain;
             }
             $unit->save();
