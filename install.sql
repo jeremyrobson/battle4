@@ -112,7 +112,8 @@ CREATE TABLE `item_party` (
   `item_party_id` INT NOT NULL AUTO_INCREMENT,
   `item_id` INT NOT NULL,
   `party_id` INT NOT NULL,
-  PRIMARY KEY (`item_party_id`)
+  PRIMARY KEY (`item_party_id`),
+  UNIQUE KEY `in_inventory` (`item_id`)
 );
 
 CREATE TABLE `item_unit_slot` (

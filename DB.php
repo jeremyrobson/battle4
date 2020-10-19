@@ -57,6 +57,18 @@ class DB {
         return $this;
     }
 
+    public function whereIsNull($column, $logic = "AND") {
+        if ($this->where) {
+            $this->sql .= " $logic $column IS NULL";
+        }
+        else {
+            $this->sql .= " WHERE $column IS NULL";
+            $this->where = true;
+        }
+
+        return $this;
+    }
+
     public function execute() {
         $this->stmt = self::$conn->prepare($this->sql);
         $this->stmt->execute($this->params);

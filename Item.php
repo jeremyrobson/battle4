@@ -70,19 +70,66 @@ class Item {
     }
 
     /**
-     * @param string $column
-     * @param string $value
+     * @param int $party_id
      * @return Item[]
      */
-    public static function getAllItems() {
+    public static function getItemsByPartyId($party_id) {
         $db = new DB();
-        $results = $db->query("item")->execute()->fetchAll();
 
-        $spoils = [];
+        $results = $db
+            ->query("item")
+            ->join("item_party", "item_id")
+            ->where("party_id", $party_id)
+            ->execute()
+            ->fetchAll();
+
+        $units = [];
+
         foreach ($results as $result) {
-            $spoils[$result["item_id"]] = new Item($result);
+            $units[$result["item_id"]] = new Item($result);
         }
 
-        return $spoils;
+        return $units;
+    }
+
+    /**
+     * @param int $item_code
+     * @return Item
+     */
+    public static function getItemByCode($item_code) {
+        $db = new DB();
+
+        $result = $db
+            ->query("item")
+            ->where("item_code", $item_code)
+            ->execute()
+            ->fetch();
+
+        return new Item($result);
+    }
+
+    /**
+     * @return array[]
+     */
+    public static function getShopItems() {
+        $db = new DB();
+        return $db
+            ->query("item")
+            ->join("item_party", "item_id")
+            ->execute()
+            ->fetchAll();
+    }
+
+    /**
+     * @param int $item_id
+     * @param int $party_id
+     * @return int
+     */
+    public static function buyItem($item_id, $party_id) {
+        $db = new DB();
+        return $db->insert("item_party", [
+            "item_id" => $item_id,
+            "party_id" => $party_id
+        ]);
     }
 }

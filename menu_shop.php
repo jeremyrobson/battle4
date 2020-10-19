@@ -1,71 +1,43 @@
 <?php
 
 require_once("constants.php");
+require_once("functions.php");
+require_once("User.php");
 require_once("Item.php");
 
-/**
- * @param string $job_key
- * @param string $type_key
- * @param string $class_key
- * @return Item
- * @throws Exception
- */
-function generate_random_item($job_key = null, $type_key = null, $class_key = null) {
-    if (empty($job_key)) {
-        $job_key = array_rand($GLOBALS["job_definitions"]);
-    }
+$user = User::getUserByUserId($_SESSION["user_id"]);
 
-    if (empty($type_key)) {
-        $item_types = $GLOBALS["job_definitions"][$job_key]["item_types"];
-        $type_index = array_rand($item_types);
-        $type_key = $item_types[$type_index];
-    }
+$items = Item::getShopItems();
 
-    $item_definition = $GLOBALS["item_definitions"][$type_key];
+$available_items = array_filter($items, function($item) {
+    return !isset($item["party_id"]);
+});
 
-    $slot_key = $item_definition["slot"];
-    $slot_id = $GLOBALS["slot_definitions"][$slot_key];
+$count = 10 - count($available_items);
 
-    $item = new Item([
-        "slot_id" => $slot_id,
-        "name" => $type_key,
-        "type" => $type_key,
-        "class" => $item_definition["class"],
-        "cost" => random_int(100, 1000)
-    ]);
-
-    $stats = $GLOBALS["item_definitions"][$type_key]["stats"];
-    $values = [];
-    foreach ($stats as $stat) {
-        $value = random_int(1, 5);
-        $item->$stat += $value;
-        $values[] = "$stat +$value";
-    }
-
-    $item->name = "$type_key " . implode(", ", $values);
-
-    $item->save();
-
-    return $item;
-}
-
-$items = Item::getAllItems();
-
-while (count($items) < 10) {
-    $items[] = generate_random_item();
+for ($i=0; $i<$count; $i++) {
+    $items[] = (array) generate_random_item();
 }
 
 ?>
 
+<h2>Ye Olde Shoppe</h2>
 
 <div>
+    Funds: <?=$user->funds?>
+</div>
+
+<div>
+
+    <h3>Catalogue</h3>
 
     <table>
 
         <thead>
             <tr>
-                <th>Buy Item</th>
                 <th>Name</th>
+                <th>Cost</th>
+                <th>Status</th>
             </tr>
         </thead>
 
@@ -73,12 +45,27 @@ while (count($items) < 10) {
         <?php foreach ($items as $item): ?>
             <tr>
                 <td>
-                    <a href="?page=buy_item&item_code=<?=$item->item_code?>">
-                        <?=$item->item_code?>
+                    <?php
+                        if (isset($item["party_id"])):
+                            echo $item["name"];
+                        else:
+                    ?>
+                    <a href="?page=buy_item&item_code=<?=$item["item_code"]?>">
+                        <?=$item["name"]?>
                     </a>
+                    <?php endif; ?>
                 </td>
                 <td>
-                    <?=$item->name?>
+                    $<?=$item["cost"]?>
+                </td>
+                <td>
+                    <?php
+                    if (isset($item["party_id"])):
+                        echo "Purchased";
+                    else:
+                        echo "Available";
+                    endif;
+                    ?>
                 </td>
             </tr>
         <?php endforeach; ?>
